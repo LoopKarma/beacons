@@ -11,7 +11,7 @@ class m150829_094141_addPosTable extends Migration
     {
         $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         $this->createTable($this->tableName, [
-            'pos_id' => $this->integer(10)->notNull(),
+            'pos_id' => $this->primaryKey(5),
             'merchant_id' => $this->integer(10)->notNull(),
             'create_date' => $this->dateTime()->notNull(),
             'update_date' => $this->dateTime(),
@@ -20,7 +20,6 @@ class m150829_094141_addPosTable extends Migration
             'major' => $this->string(20),
             'minor' => $this->string(20),
         ], $tableOptions);
-        $this->addPrimaryKey('pos_id', $this->tableName, 'pos_id');
         $this->createIndex('pos_major', $this->tableName, 'major');
         $this->createIndex('pos_minor', $this->tableName, 'minor');
     }
@@ -30,14 +29,4 @@ class m150829_094141_addPosTable extends Migration
         $this->dropTable($this->tableName);
     }
 
-    /*
-    // Use safeUp/safeDown to run migration code within a transaction
-    public function safeUp()
-    {
-    }
-
-    public function safeDown()
-    {
-    }
-    */
 }
