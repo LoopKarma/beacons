@@ -1,0 +1,4 @@
+/vendor
+/config/db.php
+composer.lock
+tests/_output/*
