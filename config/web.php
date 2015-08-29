@@ -7,6 +7,10 @@ $config = [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'components' => [
+        'urlManager' => [
+            'showScriptName'=>false,
+            'enablePrettyUrl'=>true,
+        ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'qbyl9TQc_1Cqn9rdqntXefal0vpL-aNc',
@@ -16,7 +20,12 @@ $config = [
         ],
         'user' => [
             'identityClass' => 'app\models\User',
+            'loginUrl' => ['user/login'],
+            'authTimeout' => '86400',
             'enableAutoLogin' => true,
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -47,11 +56,13 @@ if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
+        'allowedIPs' => ['192.168.56.1']
     ];
 
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = [
         'class' => 'yii\gii\Module',
+        'allowedIPs' => ['192.168.56.1']
     ];
 }
 

@@ -2,102 +2,132 @@
 
 namespace app\models;
 
-class User extends \yii\base\Object implements \yii\web\IdentityInterface
-{
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
+use Yii;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+use yii\behaviors\TimestampBehavior;
 
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
+/**
+ * This is the model class for table "ai_user".
+ *
+ * @property integer $user_id
+ * @property string $create_date
+ * @property string $update_date
+ * @property string $login
+ * @property string $email
+ * @property string $password
+ * @property string $role
+ * @property string $auth_key
+ */
+class User extends ActiveRecord implements IdentityInterface
+{
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return '{{%user}}';
+    }
 
     /**
      * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['create_date', 'login', 'password'], 'required'],
+            [['create_date', 'update_date'], 'safe'],
+            [['login', 'role', 'auth_key'], 'string', 'max' => 50],
+            [['email'], 'string', 'max' => 100],
+            [['password'], 'string', 'max' => 256]
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'user_id' => 'User ID',
+            'create_date' => 'Create Date',
+            'update_date' => 'Update Date',
+            'login' => 'Login',
+            'email' => 'Email',
+            'password' => 'Password',
+            'role' => 'Role',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'create_date',
+                'updatedAtAttribute' => 'update_date',
+                'value' => function () {
+                    return date("Y-m-d H:i:s");
+                },
+            ],
+        ];
+    }
+
+    /**
+     * @param int|string $id
+     * @return null|static
      */
     public static function findIdentity($id)
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return static::findOne($id);
     }
 
     /**
-     * @inheritdoc
+     * @param mixed $token
+     * @param null $type
+     * @return null|static
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return static::findOne(['accessToken' => $token]);
     }
 
     /**
-     * Finds user by username
-     *
-     * @param  string      $username
-     * @return static|null
-     */
-    public static function findByUsername($username)
-    {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @inheritdoc
+     * @return int
      */
     public function getId()
     {
-        return $this->id;
+        return $this->user_id;
     }
 
+
     /**
-     * @inheritdoc
+     * @return mixed
      */
     public function getAuthKey()
     {
-        return $this->authKey;
+        return $this->auth_key;
     }
 
     /**
-     * @inheritdoc
+     * @param string $authKey
+     * @return bool
      */
     public function validateAuthKey($authKey)
     {
-        return $this->authKey === $authKey;
+        return $this->getAuthKey() === $authKey;
     }
 
     /**
-     * Validates password
-     *
-     * @param  string  $password password to validate
-     * @return boolean if password provided is valid for current user
+     * @param $password
+     * @return bool
+     * @throws \yii\base\InvalidConfigException
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        return \Yii::$app->security->validatePassword($password, $this->password);
     }
 }

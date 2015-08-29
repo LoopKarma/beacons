@@ -12,6 +12,8 @@ class m150829_105214_couponTemplate extends Migration
         $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         $this->createTable($this->tableName, [
             'template_id' => $this->primaryKey(5),
+            'create_date' => $this->dateTime()->notNull(),
+            'update_date' => $this->dateTime(),
             'active' => $this->smallInteger(1)->defaultValue(1)->notNull(),
             'merchant_id' => $this->integer(10)->notNull(),
             'pos' => $this->integer(10),
