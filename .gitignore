@@ -2,3 +2,4 @@
 /config/db.php
 composer.lock
 tests/_output/*
+/web/test.php

@@ -1,15 +1,18 @@
 <?php
 
 $params = require(__DIR__ . '/params.php');
+$db = require(__DIR__ . '/db.php');
 
 $config = [
-    'id' => 'basic',
+    'id' => 'main',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'language' => 'RU-ru',
+    'timeZone' => 'Europe/Moscow',
     'components' => [
         'urlManager' => [
-            'showScriptName'=>false,
-            'enablePrettyUrl'=>true,
+            'showScriptName' => false,
+            'enablePrettyUrl' => true,
         ],
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -46,7 +49,7 @@ $config = [
                 ],
             ],
         ],
-        'db' => require(__DIR__ . '/db.php'),
+        'db' => $db,
     ],
     'params' => $params,
 ];
