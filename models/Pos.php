@@ -4,7 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
-use yii\validators\UniqueValidator;
+use yii\helpers\VarDumper;
 
 /**
  * This is the model class for table "ai_pos".
@@ -36,7 +36,7 @@ class Pos extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['merchant_id'], 'required'],
+            [['merchant_id', 'major', 'minor'], 'required'],
             [['merchant_id'], 'integer'],
             [['address', 'beacon_identifier'], 'string', 'max' => 256],
             [['major', 'minor'], 'string', 'max' => 20],
@@ -45,19 +45,19 @@ class Pos extends \yii\db\ActiveRecord
     }
 
     /**
-     * @inheritdoc
+     * @inheritdocесм
      */
     public function attributeLabels()
     {
         return [
-            'pos_id' => 'Pos ID',
-            'merchant_id' => 'Merchant',
-            'create_date' => 'Create Date',
-            'update_date' => 'Update Date',
-            'address' => 'Address',
-            'beacon_identifier' => 'Beacon Identifier',
-            'major' => 'Major',
-            'minor' => 'Minor',
+            'pos_id' => 'Точка продажи ID',
+            'merchant_id' => 'Мерчант',
+            'create_date' => 'Дата создания',
+            'update_date' => 'Дата изменения',
+            'address' => 'Адрес',
+            'beacon_identifier' => 'Идентификатор маячка',
+            'major' => 'Major маячка',
+            'minor' => 'Minor маячка',
         ];
     }
 
@@ -112,5 +112,15 @@ class Pos extends \yii\db\ActiveRecord
                 },
             ],
         ];
+    }
+
+    public static function getPointsArray()
+    {
+        $points = [];
+        $items = static::find()->select(['pos_id', 'address'])->all();
+        foreach ($items as $item) {
+            $points[$item->pos_id] = $item->address;
+        }
+        return $points;
     }
 }

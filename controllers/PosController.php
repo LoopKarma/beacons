@@ -2,9 +2,9 @@
 
 namespace app\controllers;
 
-use app\models\Merchant;
 use Yii;
 use app\models\Pos;
+use yii\filters\AccessControl;
 use app\models\search\PosSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -18,6 +18,16 @@ class PosController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => [\app\models\User::ROLE_ADMIN],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [

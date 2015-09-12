@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Pos */
 
-$this->title = 'Create Pos';
-$this->params['breadcrumbs'][] = ['label' => 'Pos', 'url' => ['index']];
+$this->title = 'Создать Точку продаж';
+$this->params['breadcrumbs'][] = ['label' => 'Точки продаж', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pos-create">

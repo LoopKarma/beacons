@@ -1,6 +1,5 @@
 <?php
 
-use yii\db\Schema;
 use yii\db\Migration;
 
 class m150829_102528_userTable extends Migration
@@ -11,7 +10,9 @@ class m150829_102528_userTable extends Migration
     {
         $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         $this->createTable($this->tableName, [
+            'active' => $this->smallInteger(1)->defaultValue(1)->notNull(),
             'user_id' => $this->primaryKey(10),
+            'merchant_id' => $this->integer()->defaultValue(null),
             'create_date' => $this->dateTime()->notNull(),
             'update_date' => $this->dateTime(),
             'login' => $this->string(50)->notNull(),

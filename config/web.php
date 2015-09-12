@@ -9,6 +9,9 @@ $config = [
     'bootstrap' => ['log'],
     'language' => 'RU-ru',
     'timeZone' => 'Europe/Moscow',
+    'aliases' => [
+        '@admin' => realpath(dirname(__FILE__).'/../')
+    ],
     'components' => [
         'urlManager' => [
             'showScriptName' => false,
@@ -26,6 +29,9 @@ $config = [
             'loginUrl' => ['user/login'],
             'authTimeout' => '86400',
             'enableAutoLogin' => true,
+            'on afterLogin' => function ($event) {
+                Yii::$app->user->identity->afterLogin($event);
+            },
         ],
         'authManager' => [
             'class' => 'yii\rbac\DbManager',
@@ -48,6 +54,12 @@ $config = [
                     'levels' => ['error', 'warning'],
                 ],
             ],
+        ],
+        'pass' => [
+            'class' => 'app\components\Pass',
+            'passFilePath' => '@webroot/files/pass/',
+            'wwdrCertPath' => '@webroot/files/cert/WWDR.pem',
+            'teamIdentifier' => '8V4MJ9GE5G',
         ],
         'db' => $db,
     ],

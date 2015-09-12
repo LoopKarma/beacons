@@ -25,8 +25,8 @@ class m150829_112221_TemplatePosManyToMany extends Migration
             'template_id',
             $this->tempalteTableName,
             'template_id',
-            'CASCADE',
-            'CASCADE'
+            'NO ACTION',
+            'NO ACTION'
         );
         $this->addForeignKey(
             'fk_pos',
@@ -34,8 +34,8 @@ class m150829_112221_TemplatePosManyToMany extends Migration
             'pos_id',
             $this->posTableName,
             'pos_id',
-            'CASCADE',
-            'CASCADE'
+            'NO ACTION',
+            'NO ACTION'
         );
     }
 

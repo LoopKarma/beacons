@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\search\MerchantSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Merchants';
+$this->title = 'Мерчанты';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="merchant-index">
@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Merchant', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать Мерчанта', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([

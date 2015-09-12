@@ -6,7 +6,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 
 /**
- * This is the model class for table "ai_barcode_message".
+ * This is the model class for table "{{%barcode_message}}".
  *
  * @property integer $message_id
  * @property string $create_date
@@ -31,8 +31,7 @@ class BarcodeMessage extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['create_date', 'merchant_id'], 'required'],
-            [['create_date', 'update_date'], 'safe'],
+            [['merchant_id'], 'required'],
             [['merchant_id', 'utilize'], 'integer'],
             [['message'], 'string']
         ];
@@ -44,12 +43,12 @@ class BarcodeMessage extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'message_id' => 'Message ID',
-            'create_date' => 'Create Date',
-            'update_date' => 'Update Date',
-            'merchant_id' => 'Merchant ID',
-            'message' => 'Message',
-            'utilize' => 'Utilize',
+            'message_id' => 'ID Сообщения',
+            'create_date' => 'Дата создания',
+            'update_date' => 'Дата изменения',
+            'merchant_id' => 'Мерчант ID',
+            'message' => 'Текст сообщения',
+            'utilize' => 'Использовано',
         ];
     }
 
@@ -68,5 +67,10 @@ class BarcodeMessage extends \yii\db\ActiveRecord
                 },
             ],
         ];
+    }
+
+    public function getMerchant()
+    {
+        return $this->hasOne(Merchant::className(), ['merchant_id' => 'merchant_id']);
     }
 }

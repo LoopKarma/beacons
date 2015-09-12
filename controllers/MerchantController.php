@@ -3,9 +3,12 @@
 namespace app\controllers;
 
 use Yii;
+use yii\db\ActiveRecord;
+use app\models\CertFile;
 use app\models\Merchant;
 use app\models\search\MerchantSearch;
 use yii\web\Controller;
+use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -17,6 +20,16 @@ class MerchantController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => [\app\models\User::ROLE_ADMIN],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -60,15 +73,17 @@ class MerchantController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Merchant();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->merchant_id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+        $model = new Merchant(['scenario' => 'create']);
+        $post = Yii::$app->request->post();
+        if ($post && $model->load($post)) {
+            $this->uploadFiles($model);
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->merchant_id]);
+            }
         }
+        return $this->render('create', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -80,14 +95,16 @@ class MerchantController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->merchant_id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+        $post = Yii::$app->request->post();
+        if ($post && $model->load($post)) {
+            $this->uploadFiles($model);
+            if ($model->save()) {
+                return $this->redirect(['view', 'id' => $model->merchant_id]);
+            }
         }
+        return $this->render('update', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -107,7 +124,7 @@ class MerchantController extends Controller
      * Finds the Merchant model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Merchant the loaded model
+     * @return \app\models\Merchant
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
@@ -116,6 +133,17 @@ class MerchantController extends Controller
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
+        }
+    }
+
+    /**
+     * @param ActiveRecord $model
+     */
+    protected function uploadFiles(ActiveRecord $model)
+    {
+        $cert = CertFile::uploadFile($model, 'cert_files');
+        if ($cert) {
+            $model->cert_files = $cert->file_id;
         }
     }
 }

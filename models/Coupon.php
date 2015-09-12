@@ -16,7 +16,7 @@ use yii\behaviors\TimestampBehavior;
  * @property integer $pos_id
  * @property string $client
  * @property integer $confirmed
- * @property integer $message_id
+ * @property integer $message
  * @property string $uuid
  * @property string $major
  * @property string $minor
@@ -38,9 +38,8 @@ class Coupon extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['create_date', 'template_id', 'merchant_id', 'pos_id', 'client', 'message_id', 'uuid', 'major', 'minor', 'serial_number'], 'required'],
-            [['create_date', 'update_date'], 'safe'],
-            [['template_id', 'merchant_id', 'pos_id', 'confirmed', 'message_id'], 'integer'],
+            [['template_id', 'merchant_id', 'pos_id', 'client', 'message', 'uuid', 'major', 'minor'], 'required'],
+            [['template_id', 'merchant_id', 'pos_id', 'confirmed', 'message'], 'integer'],
             [['client', 'serial_number'], 'string', 'max' => 100],
             [['uuid', 'major', 'minor'], 'string', 'max' => 32],
             [['serial_number'], 'unique']
@@ -53,21 +52,31 @@ class Coupon extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'coupon_id' => 'Coupon ID',
-            'create_date' => 'Create Date',
-            'update_date' => 'Update Date',
-            'template_id' => 'Template ID',
-            'merchant_id' => 'Merchant ID',
-            'pos_id' => 'Pos ID',
+            'coupon_id' => 'ID купона',
+            'create_date' => 'Дата создания',
+            'template_id' => 'ID шаблона',
+            'merchant_id' => 'ID мерчанта',
+            'pos_id' => 'Точка продаж',
             'client' => 'Client',
-            'confirmed' => 'Confirmed',
-            'message_id' => 'Message ID',
+            'confirmed' => 'Подтверждено',
+            'message' => ' ID',
             'uuid' => 'Uuid',
             'major' => 'Major',
             'minor' => 'Minor',
-            'serial_number' => 'Serial Number',
+            'serial_number' => 'Серийный номер',
         ];
     }
+
+    /*
+    public function afterSave($insert, $changedAttributes)
+    {
+        if ($insert) {
+            $this->serialNumber = Yii::$app->security->generateRandomKey();
+            $this->update(false, 'serialNumber');
+        }
+        parent::afterSave();
+    }
+    */
 
     /**
      * @return array
@@ -78,11 +87,35 @@ class Coupon extends \yii\db\ActiveRecord
             [
                 'class' => TimestampBehavior::className(),
                 'createdAtAttribute' => 'create_date',
-                'updatedAtAttribute' => 'update_date',
+                'updatedAtAttribute' => false,
                 'value' => function () {
                     return date("Y-m-d H:i:s");
                 },
             ],
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMerchant()
+    {
+        return $this->hasOne(Merchant::className(), ['merchant_id' => 'merchant_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTemplate()
+    {
+        return $this->hasOne(CouponTemplate::className(), ['template_id' => 'template_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPos()
+    {
+        return $this->hasOne(Pos::className(), ['pos_id' => 'pos_id']);
     }
 }

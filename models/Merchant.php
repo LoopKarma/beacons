@@ -34,7 +34,8 @@ class Merchant extends \yii\db\ActiveRecord
     {
         return [
             [['uuid', 'name', 'pass_type_id'], 'required'],
-            [['cert_files'], 'string'],
+            [['cert_files'], 'required', 'on' => 'create'],
+            [['uuid'], 'unique'],
             [['uuid'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 100],
             [['description', 'pass_type_id'], 'string', 'max' => 256]
@@ -47,17 +48,20 @@ class Merchant extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'merchant_id' => 'Merchant ID',
-            'create_date' => 'Create Date',
-            'update_date' => 'Update Date',
-            'uuid' => 'Uuid',
-            'name' => 'Name',
-            'description' => 'Description',
+            'merchant_id' => 'Мерчант ID',
+            'create_date' => 'Дата создания',
+            'update_date' => 'Дата изменения',
+            'uuid' => 'UUID',
+            'name' => 'Название',
+            'description' => 'Описание',
             'pass_type_id' => 'Pass Type ID',
-            'cert_files' => 'Cert Files',
+            'cert_files' => 'Файл сертификата .p12',
         ];
     }
 
+    /**
+     * @return array
+     */
     public function behaviors()
     {
         return [
@@ -72,14 +76,28 @@ class Merchant extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getPos()
     {
         return $this->hasMany(Pos::className(), ['merchant_id' => 'merchant_id']);
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCertFile()
+    {
+        return $this->hasOne(CertFile::className(), ['file_id' => 'cert_files']);
+    }
+
+    /**
+     * @return array
+     */
     public static function getMerchantList()
     {
-        $list = [];
+        $list = ['' => '(нет значения)'];
         $items = self::find()->select(['merchant_id', 'name'])->asArray()->all();
         foreach ($items as $item) {
             $list[$item['merchant_id']] = $item['name'];

@@ -9,6 +9,9 @@ $config = [
     'bootstrap' => ['log'],
     'language' => 'RU-ru',
     'timeZone' => 'Europe/Moscow',
+    'aliases' => [
+        '@admin' => realpath(dirname(__FILE__).'/../')
+    ],
     'modules' => [
         'v1' => [
             'class' => 'app\api\modules\v1\Module',
@@ -17,14 +20,18 @@ $config = [
     'components' => [
         'urlManager' => [
             'enablePrettyUrl' => true,
+            'enableStrictParsing' => true,
             'showScriptName' => false,
+            'rules' => [
+                'v1/coup'       => 'v1/default/index',
+            ],
         ],
         'response' => [
             'class' => 'yii\web\Response',
             'format' => yii\web\Response::FORMAT_RAW,
         ],
         'cache' => [
-            'class' => 'yii\caching\ApcCache',
+            'class' => 'yii\caching\FileCache',
         ],
         'user' => [
             'identityClass' => false,
@@ -35,21 +42,20 @@ $config = [
                 [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
+                    'logVars' => ['_POST', '_GET'],
                     'logFile' => '@app/runtime/logs/api.log'
                 ],
             ],
+        ],
+        'pass' => [
+            'class' => 'app\components\Pass',
+            'passFilePath' => '@admin/files/pass/',
+            'wwdrCertPath' => '@admin/files/cert/WWDR.pem',
+            'teamIdentifier' => '8V4MJ9GE5G',
         ],
         'db' => $db,
     ],
     'params' => $params,
 ];
-
-if (YII_ENV_DEV) {
-    $config['bootstrap'][] = 'debug';
-    $config['modules']['debug'] = [
-        'class' => 'yii\debug\Module',
-        'allowedIPs' => ['192.168.56.1']
-    ];
-}
 
 return $config;

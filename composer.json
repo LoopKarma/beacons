@@ -18,7 +18,9 @@
         "yiisoft/yii2": "*",
         "yiisoft/yii2-bootstrap": "*",
         "yiisoft/yii2-swiftmailer": "*",
-        "pkpass/pkpass": "dev-master"
+        "pkpass/pkpass": "dev-master",
+        "kartik-v/yii2-widget-select2": "*",
+        "kartik-v/yii2-widget-fileinput": "@dev"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

@@ -30,7 +30,14 @@ class TemplatePos extends \yii\db\ActiveRecord
     {
         return [
             [['template_id', 'pos_id'], 'required'],
-            [['template_id', 'pos_id'], 'integer']
+            [['template_id', 'pos_id'], 'integer'],
+            [['pos_id'], 'exist', 'targetAttribute' => 'pos_id', 'targetClass' => Pos::className()],
+            [
+                ['template_id'],
+                'exist',
+                'targetAttribute' => 'template_id',
+                'targetClass' => CouponTemplate::className()
+            ],
         ];
     }
 

@@ -5,10 +5,10 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Merchant */
 
-$this->title = 'Update Merchant: ' . ' ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Merchants', 'url' => ['index']];
+$this->title = 'Изменить Мерчанта: ' . ' ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Мерчанты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->merchant_id]];
-$this->params['breadcrumbs'][] = 'Update';
+$this->params['breadcrumbs'][] = 'Изменить';
 ?>
 <div class="merchant-update">
 

@@ -1,6 +1,5 @@
 <?php
 
-use yii\db\Schema;
 use yii\db\Migration;
 
 class m150829_105214_couponTemplate extends Migration
@@ -16,21 +15,25 @@ class m150829_105214_couponTemplate extends Migration
             'update_date' => $this->dateTime(),
             'active' => $this->smallInteger(1)->defaultValue(1)->notNull(),
             'merchant_id' => $this->integer(10)->notNull(),
-            'pos' => $this->integer(10),
-            'organization_name' => $this->string(256)->defaultValue("GetCoupon"),
-            'team_identifier' => $this->string(256)->defaultValue("8V4MJ9GE5G"),
+            'coupon' => $this->text()->notNull(),
+            'background_color' => $this->string(16)->defaultValue(null),
+            'foreground_color' => $this->string(16)->defaultValue(null),
+            'organization_name' => $this->string(256)->defaultValue(null),
+            'team_identifier' => $this->string(256)->defaultValue(null),
             'logo_text' => $this->string(256)->defaultValue(null),
             'description' => $this->string(256)->defaultValue(null),
-            'foreground_color' => $this->string(30)->defaultValue(null),
-            'background_color' => $this->string(30)->defaultValue(null),
-            'label_color' => $this->string(30)->defaultValue(null),
-            'coupon_fields' => $this->text()->notNull(),
-            'beacon_relevant_text' => $this->string(256)->defaultValue("Воспользуйтесь купоном!"),
-            'barcode_format' => $this->string(100)->defaultValue("PKBarcodeFormatQR"),
-            'barcode_message_encoding' => $this->string(100)->defaultValue("iso-8859-1")
+            'without_barcode' => $this->smallInteger(1)->defaultValue(null),
+            'beacon_relevant_text' => $this->string(256)->defaultValue(null),
+            'barcode_format' => $this->string(100)->defaultValue(null),
+            'barcode_message_encoding' => $this->string(100)->defaultValue(null),
+            'icon' => $this->string(10)->defaultValue(null),
+            'icon_retina' => $this->string(10)->defaultValue(null),
+            'logo' => $this->string(10)->defaultValue(null),
+            'logo_retina' => $this->string(10)->defaultValue(null),
+            'strip_image' => $this->string(10)->defaultValue(null),
+            'strip_image_retina' => $this->string(10)->defaultValue(null),
         ], $tableOptions);
         $this->createIndex('template_merch', $this->tableName, 'merchant_id');
-        $this->createIndex('template_pos', $this->tableName, 'pos');
     }
 
     public function down()

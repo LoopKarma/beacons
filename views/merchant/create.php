@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Merchant */
 
-$this->title = 'Create Merchant';
-$this->params['breadcrumbs'][] = ['label' => 'Merchants', 'url' => ['index']];
+$this->title = 'Создать Мерчанта';
+$this->params['breadcrumbs'][] = ['label' => 'Мерчанты', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="merchant-create">

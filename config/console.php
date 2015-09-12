@@ -14,7 +14,11 @@ return [
     'aliases' => [
         '@tests' => dirname(__DIR__) . '/tests'
     ],
+
     'components' => [
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

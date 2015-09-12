@@ -18,9 +18,13 @@ use yii\behaviors\TimestampBehavior;
  * @property string $password
  * @property string $role
  * @property string $auth_key
+ * @property string $merchant_id
  */
 class User extends ActiveRecord implements IdentityInterface
 {
+    const ROLE_ADMIN = 'administrator';
+    const ROLE_MERCHANT = 'merchant';
+
     /**
      * @inheritdoc
      */
@@ -35,11 +39,14 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['create_date', 'login', 'password'], 'required'],
-            [['create_date', 'update_date'], 'safe'],
+            [['login', 'password'], 'required'],
             [['login', 'role', 'auth_key'], 'string', 'max' => 50],
             [['email'], 'string', 'max' => 100],
-            [['password'], 'string', 'max' => 256]
+            [['password'], 'string', 'max' => 256],
+            [['merchant_id', 'active'], 'integer'],
+            [['merchant_id'], 'exist', 'targetAttribute' => 'merchant_id', 'targetClass' => Merchant::className()],
+            [['role'], 'in', 'enableClientValidation' => true, 'range' => [static::ROLE_ADMIN, static::ROLE_MERCHANT]],
+            [['role'], 'validateMerchant'],
         ];
     }
 
@@ -49,13 +56,15 @@ class User extends ActiveRecord implements IdentityInterface
     public function attributeLabels()
     {
         return [
-            'user_id' => 'User ID',
-            'create_date' => 'Create Date',
-            'update_date' => 'Update Date',
-            'login' => 'Login',
+            'active' => 'Активность',
+            'user_id' => 'ID',
+            'create_date' => 'Дата создания',
+            'update_date' => 'Дата изменения',
+            'login' => 'Логин',
             'email' => 'Email',
-            'password' => 'Password',
-            'role' => 'Role',
+            'password' => 'Пароль',
+            'role' => 'Роль',
+            'merchant_id' => 'Мерчант',
         ];
     }
 
@@ -76,13 +85,25 @@ class User extends ActiveRecord implements IdentityInterface
         ];
     }
 
+    public function getMerchant()
+    {
+        return $this->hasOne(Merchant::className(), ['merchant_id' => 'merchant_id']);
+    }
+
+    public function validateMerchant($attribute)
+    {
+        if ($this->{$attribute} == static::ROLE_MERCHANT && !$this->merchant_id) {
+            $this->addError('merchant_id', 'Необходимо выбрать организацию');
+        }
+    }
+
     /**
-     * @param int|string $id
+     * @param int|string $userId
      * @return null|static
      */
-    public static function findIdentity($id)
+    public static function findIdentity($userId)
     {
-        return static::findOne($id);
+        return static::findOne($userId);
     }
 
     /**
@@ -129,5 +150,37 @@ class User extends ActiveRecord implements IdentityInterface
     public function validatePassword($password)
     {
         return \Yii::$app->security->validatePassword($password, $this->password);
+    }
+
+    public static function findByLogin($login)
+    {
+        return static::findOne(['login' => $login]);
+    }
+
+    public function beforeSave($insert)
+    {
+        if (isset($this->password)) {
+            $this->password = Yii::$app->security->generatePasswordHash($this->password);
+        }
+        $this->auth_key = Yii::$app->security->generateRandomString(50);
+        return parent::beforeSave($insert);
+    }
+
+    public function afterLogin()
+    {
+        //set role
+        $auth = Yii::$app->authManager;
+        $roleName = $this->role;
+        $role = $auth->getRole($roleName);
+        if (!$role) {
+            Yii::$app->user->logout();
+            Yii::$app->session->setFlash(
+                'danger',
+                'Невозможно определить тип пользователя. Свяжитесь с администратором'
+            );
+        } else {
+            $auth->revokeAll($this->user_id);
+            $auth->assign($role, $this->user_id);
+        }
     }
 }

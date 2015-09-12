@@ -3,3 +3,4 @@
 composer.lock
 tests/_output/*
 /web/test.php
+/web/images/

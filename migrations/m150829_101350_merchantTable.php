@@ -14,7 +14,7 @@ class m150829_101350_merchantTable extends Migration
             'create_date' => $this->dateTime()->notNull(),
             'update_date' => $this->dateTime(),
             'uuid' => $this->string(32)->notNull(),
-            'name' => $this->string(10)->notNull(),
+            'name' => $this->string(100)->notNull(),
             'description' => $this->string(256)->defaultValue(null),
             'pass_type_id' => $this->string(256)->notNull(),
             'cert_files' => $this->text(),
