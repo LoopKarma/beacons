@@ -46,7 +46,7 @@ class UserController extends Controller
         ];
     }
 
-    /** Авторизация пользоватлея
+    /** пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      * @return string|\yii\web\Response
      */
     public function actionLogin()
@@ -61,7 +61,7 @@ class UserController extends Controller
         }
     }
 
-    /** Выход пользоватлея
+    /** пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
      * @return string|\yii\web\Response
      */
     public function actionLogout()
@@ -86,13 +86,13 @@ class UserController extends Controller
     }
     /**
      * Displays a single User model.
-     * @param integer $userId
+     * @param integer $id
      * @return mixed
      */
-    public function actionView($userId)
+    public function actionView($id)
     {
         return $this->render('view', [
-            'model' => $this->findModel($userId),
+            'model' => $this->findModel($id),
         ]);
     }
 
@@ -117,12 +117,12 @@ class UserController extends Controller
     /**
      * Updates an existing User model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $userId
+     * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($userId)
+    public function actionUpdate($id)
     {
-        $model = $this->findModel($userId);
+        $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->user_id]);
@@ -136,12 +136,12 @@ class UserController extends Controller
     /**
      * Deletes an existing User model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $userId
+     * @param integer $id
      * @return mixed
      */
-    public function actionDelete($userId)
+    public function actionDelete($id)
     {
-        $this->findModel($userId)->delete();
+        $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
     }
@@ -149,13 +149,13 @@ class UserController extends Controller
     /**
      * Finds the User model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $userId
+     * @param integer $id
      * @return User the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($userId)
+    protected function findModel($id)
     {
-        if (($model = User::findOne($userId)) !== null) {
+        if (($model = User::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

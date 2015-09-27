@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Coupon */
 
-$this->title = 'Купон [' . $model->coupon_id;
+$this->title = 'Купон [' . $model->coupon_id . ']';
 $this->params['breadcrumbs'][] = ['label' => 'Купоны', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

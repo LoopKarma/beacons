@@ -183,4 +183,21 @@ class User extends ActiveRecord implements IdentityInterface
             $auth->assign($role, $this->user_id);
         }
     }
+
+    public function beforeDelete()
+    {
+        if (parent::beforeDelete()) {
+            if ($this->primaryKey != 1) {
+                return true;
+            } else {
+                Yii::$app
+                    ->session
+                    ->setFlash(
+                        'danger',
+                        'Нельзя удалить администратора'
+                    );
+            }
+        }
+        return false;
+    }
 }

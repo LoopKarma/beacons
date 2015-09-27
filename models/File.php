@@ -18,7 +18,7 @@ class File extends \yii\db\ActiveRecord
 {
     /** @var UploadedFile */
     public $file;
-    const FILE_URL = '@webroot/upload/';
+    const FILE_URL = '@web/upload/';
     const FILE_PATH_ALIAS = '@admin';
     const FILE_PATH = '/web/upload/';
 

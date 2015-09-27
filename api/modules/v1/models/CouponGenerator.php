@@ -109,6 +109,8 @@ class CouponGenerator extends Model
             $coupon->minor = $this->minor;
             $coupon->serial_number = $serialNumber;
             $coupon->save(false);
+
+            return $this->coupPath;
         } else {
             $this->addError('error', 'Error while creating coupon');
         }

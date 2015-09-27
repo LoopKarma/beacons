@@ -67,17 +67,6 @@ class Coupon extends \yii\db\ActiveRecord
         ];
     }
 
-    /*
-    public function afterSave($insert, $changedAttributes)
-    {
-        if ($insert) {
-            $this->serialNumber = Yii::$app->security->generateRandomKey();
-            $this->update(false, 'serialNumber');
-        }
-        parent::afterSave();
-    }
-    */
-
     /**
      * @return array
      */
