@@ -60,7 +60,7 @@ class File extends \yii\db\ActiveRecord
         $model->name = crc32($file->name.$file->size.$file->extension) . '.' . $model->file->getExtension();
         $model->path = $model->getSavePath() . $model->name;
         if ($model->save()) {
-            $file->saveAs($model->getSavePath(true) . $model->name);
+            $file->saveAs(Yii::getAlias($model->getSavePath(true) . $model->name));
         }
         return $model;
     }
@@ -73,7 +73,7 @@ class File extends \yii\db\ActiveRecord
     public function getSavePath($withAlias = false)
     {
         if ($withAlias) {
-            return static::FILE_PATH_ALIAS.static::FILE_PATH;
+            return static::FILE_PATH_ALIAS . static::FILE_PATH;
         }
         return static::FILE_PATH;
     }
