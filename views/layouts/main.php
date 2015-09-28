@@ -34,9 +34,8 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-
+    $items = [];
     if (!Yii::$app->user->isGuest) {
-        $items = [];
         if (Yii::$app->user->can(\app\models\User::ROLE_ADMIN)) {
             $items = ArrayHelper::merge($items, [
                 ['label' => 'Пользователи', 'url' => ['/user/index']],

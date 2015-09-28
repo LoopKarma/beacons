@@ -76,7 +76,7 @@ class TemplateController extends Controller
         if ($post && $model->load($post)) {
             $this->uploadFiles($model);
             if ($model->save()) {
-                if ($post['pos']) {
+                if (isset($post['pos'])) {
                     $this->updatePos($model, $post);
                 }
                 return $this->redirect(['view', 'id' => $model->template_id]);
@@ -100,7 +100,7 @@ class TemplateController extends Controller
         if ($post && $model->load($post)) {
             $this->uploadFiles($model);
             if ($model->save()) {
-                if ($post['pos']) {
+                if (isset($post['pos'])) {
                     $this->updatePos($model, $post);
                 }
                 return $this->redirect(['view', 'id' => $model->template_id]);
@@ -150,7 +150,7 @@ class TemplateController extends Controller
         }
         $iconRetina = TemplateFile::uploadFile($model, 'icon_retina');
         if ($iconRetina) {
-            $model->icon_retiona = $iconRetina->file_id;
+            $model->icon_retina = $iconRetina->file_id;
         }
         $logo = TemplateFile::uploadFile($model, 'logo');
         if ($logo) {

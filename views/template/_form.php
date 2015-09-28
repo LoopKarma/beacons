@@ -122,7 +122,6 @@ use yii\helpers\ArrayHelper;
         $filePluginOptions['initialPreview'] = false;
     }?>
     <?= $form->field($model, 'logo')->widget(FileInput::className(), [
-        'value' => $file->original_name,
         'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
             'maxImageHeight' => 50,
             'maxImageWidth' => 160,
