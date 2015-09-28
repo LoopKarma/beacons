@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'serial_number',
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view}',
+                'template' => '{view}{delete}',
             ],
         ],
     ]); ?>
