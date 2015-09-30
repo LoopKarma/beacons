@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 
@@ -52,8 +53,13 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
-    public function actionTest($id)
+    public function actionTest()
     {
-        return Yii::$app->pass->generatePass($id);
+        VarDumper::dump([
+            'a' => crypt('0', '2A'),
+            'b' => crypt('1', '2A'),
+            'c' => crypt('2', '2A'),
+            'd' => crypt('3', '2A'),
+        ], 10, 1);
     }
 }

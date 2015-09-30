@@ -1,72 +1,68 @@
 <?php
 namespace app\components;
 
-use app\models\CouponTemplate;
 use Yii;
 use yii\base\component;
-use yii\base\Exception;
 use PKPass\PKPass;
-use yii\db\ActiveRecord;
 use yii\helpers\Json;
-use yii\helpers\VarDumper;
+use app\api\modules\v1\models\CouponGenerator;
 
 class Pass extends Component
 {
     public $passFilePath;
     public $wwdrCertPath;
     public $teamIdentifier;
+    public $certificatePassword;
 
-
-    public function generatePass(ActiveRecord $template, ActiveRecord $merchant, ActiveRecord $pos, $serialNumber)
+    public function generatePass(CouponGenerator $model)
     {
         $pkPass = new PKPass();
         $pkPass->setTempPath($this->getPassFilePath());
         /** @var \app\models\CertFile $p12CertFile */
-        $p12CertFile = $merchant->certFile;
+        $p12CertFile = $model->merchant->certFile;
         $certPath = $p12CertFile->getPath() ?: false;
         if (!$certPath) {
-            Yii::error('Merchant has no cert file. ID = '.$merchant->primaryKey);
+            Yii::error('Merchant has no cert file. ID = '.$model->merchant->primaryKey);
             return false;
         }
         $pkPass->setCertificate($certPath);
-        $pkPass->setCertificatePassword($this->getCertificatePassword());
+        $pkPass->setCertificatePassword($this->certificatePassword);
         $pkPass->setWWDRcertPath($this->getWwdrCertPath());
 
         $standardKeys = [
-            'description'        => $template->description,
+            'description'        => $model->template->description,
             'formatVersion'      => 1,
-            'organizationName'   => $template->merchant->name,
-            'passTypeIdentifier' => $template->merchant->uuid,
-            'serialNumber'       => $serialNumber,
+            'organizationName'   => $model->template->merchant->name,
+            'passTypeIdentifier' => $model->template->merchant->uuid,
+            'serialNumber'       => $model->serialNumber,
             'teamIdentifier'     => $this->teamIdentifier,
         ];
-        $styleKeys = json_decode('{'. $template->coupon . '}', true);
+        $styleKeys = json_decode('{'. $model->template->coupon . '}', true);
         if (!$styleKeys) {
-            Yii::error('template->coupon is broken. Template ID = '.$template->primaryKey);
+            Yii::error('template->coupon is broken. Template ID = '.$model->template->primaryKey);
             return false;
         }
         $associatedAppKeys    = [];
         $relevanceKeys        = [];
-        if ($template->without_barcode) {
+        if ($model->template->without_barcode) {
             $visualAppearanceKeys = [
                 'barcode'         => [
                     'altText' => ''
                 ],
-                'foregroundColor' => $template->foreground_color,
-                'backgroundColor' => $template->background_color,
-                'logoText'        => $template->logo_text,
+                'foregroundColor' => $model->template->foreground_color,
+                'backgroundColor' => $model->template->background_color,
+                'logoText'        => $model->template->logo_text,
             ];
         } else {
             $visualAppearanceKeys = [
                 'barcode'         => [
-                    'format'          => $template->barcode_format,
-                    /** TODO сделать правильное сообщение */
-                    'message'         => 'Std message',
-                    'messageEncoding' => $template->barcode_message_encoding
+                    'format'          => $model->template->barcode_format,
+                    'message'         => mb_strtoupper($model->message),
+                    'messageEncoding' => $model->template->barcode_message_encoding
                 ],
-                'foregroundColor' => $template->foreground_color,
-                'backgroundColor' => $template->background_color,
-                'logoText'        => $template->logo_text,
+                'foregroundColor' => $model->template->foreground_color,
+                'backgroundColor' => $model->template->background_color,
+                'logoText'        => $model->template->logo_text,
             ];
         }
         $webServiceKeys = [];
@@ -79,12 +75,12 @@ class Pass extends Component
             $webServiceKeys
         );
         $pkPass->setJSON(Json::encode($passData));
-        $pkPass->addFile($template->iconFile->getPath(), 'icon.png');
-        if ($template->logoFile) {
-            $pkPass->addFile($template->logoFile->getPath(), 'logo.png');
+        $pkPass->addFile($model->template->iconFile->getPath(), 'icon.png');
+        if ($model->template->logoFile) {
+            $pkPass->addFile($model->template->logoFile->getPath(), 'logo.png');
         }
-        if ($template->stripImageFile) {
-            $pkPass->addFile($template->stripImageFile->getPath(), 'strip.png');
+        if ($model->template->stripImageFile) {
+            $pkPass->addFile($model->template->stripImageFile->getPath(), 'strip.png');
         }
         $filePath = $this->getPassFilePath().mktime().'.pkpass';
         if (!$res = $pkPass->create(false)) {
@@ -96,17 +92,6 @@ class Pass extends Component
             }
         }
         return false;
-    }
-
-    private function getP12Certificate()
-    {
-        return Yii::getAlias('@webroot'.'/files/cert/GetCouponPassCertificate.p12');
-    }
-
-
-    private function getCertificatePassword()
-    {
-        return 'getcoupon123';
     }
 
     protected function getPassFilePath()
