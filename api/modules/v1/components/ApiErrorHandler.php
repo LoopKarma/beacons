@@ -43,30 +43,8 @@ class ApiErrorHandler extends ErrorHandler
      */
     protected function convertException($exception)
     {
-        $controller = Yii::$app->controller;
-
-        if ($controller) {
-            $controllerId = Yii::$app->controller->id;
-            $action       = Yii::$app->controller->action;
-
-            if ($action) {
-                $actionId = Yii::$app->controller->action->id;
-            } else {
-                $actionId = 'none';
-            }
-
-        } else {
-            $controllerId   = 'none';
-            $actionId       = 'none';
-        }
-
-
         return [
-            'action' => $controllerId . '/' . $actionId,
-            'data' => null,
-            'extra' => [
-                'errorName' => $exception->getName(),
-            ],
+            'errorName' => $exception->getName(),
             'message' => $exception->getMessage(),
         ];
     }

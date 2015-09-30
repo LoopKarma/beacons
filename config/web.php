@@ -57,9 +57,10 @@ $config = [
         ],
         'pass' => [
             'class' => 'app\components\Pass',
-            'passFilePath' => '@webroot/files/pass/',
-            'wwdrCertPath' => '@webroot/files/cert/WWDR.pem',
+            'passFilePath' => '@admin/files/pass/',
+            'wwdrCertPath' => '@admin/files/cert/WWDR.pem',
             'teamIdentifier' => '8V4MJ9GE5G',
+            'certificatePassword' => 'getcoupon123'
         ],
         'db' => $db,
     ],
