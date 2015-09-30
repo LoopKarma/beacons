@@ -7,7 +7,7 @@ $config = [
     'id' => 'api',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
-    'language' => 'RU-ru',
+    'language' => 'ru-RU',
     'timeZone' => 'Europe/Moscow',
     'aliases' => [
         '@admin' => realpath(dirname(__FILE__).'/../')
@@ -52,6 +52,7 @@ $config = [
             'passFilePath' => '@admin/files/pass/',
             'wwdrCertPath' => '@admin/files/cert/WWDR.pem',
             'teamIdentifier' => '8V4MJ9GE5G',
+            'certificatePassword' => 'getcoupon123'
         ],
         'db' => $db,
     ],

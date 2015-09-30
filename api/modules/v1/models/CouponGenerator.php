@@ -1,15 +1,16 @@
 <?php
 namespace app\api\modules\v1\models;
 
+use app\models\BarcodeMessage;
 use Yii;
 use yii\base\Model;
 use app\models\Pos;
 use app\models\Merchant;
 use app\models\Coupon;
-
-use app\models\CouponTemplate;
 use yii\db\ActiveRecord;
+use app\models\CouponTemplate;
 use yii\helpers\VarDumper;
+use app\helpers\RandomString;
 
 class CouponGenerator extends Model
 {
@@ -26,6 +27,10 @@ class CouponGenerator extends Model
     public $pos;
     /** @var  \app\models\CouponTemplate $template */
     public $template;
+    /** @var string */
+    public $serialNumber;
+    /** @var string */
+    public $message;
 
     /**
      * @inheritdoc
@@ -35,9 +40,7 @@ class CouponGenerator extends Model
         return [
             [['client', 'uuid', 'major', 'minor'], 'required'],
             [['client', 'uuid', 'major', 'minor'], 'string'],
-            ['merchant', 'validateObjectExist'],
-            ['pos', 'validateObjectExist'],
-            ['template', 'validateObjectExist'],
+            [['merchant', 'pos', 'template'], 'validateObjectExist', 'skipOnEmpty' => false],
             ['merchant', 'validateIfCouponAlreadyExist']
         ];
     }
@@ -93,26 +96,69 @@ class CouponGenerator extends Model
         }
     }
 
+    public function afterValidate()
+    {
+        if (!$this->template->without_barcode) {
+            $this->message = $this->getBarcodeMessage();
+        }
+        parent::afterValidate();
+    }
+
     public function generateCoupon()
     {
-        $serialNumber = Yii::$app->security->generateRandomString(10);
-        if ($this->coupPath = Yii::$app->pass->generatePass($this->template, $this->merchant, $this->pos, $serialNumber)) {
-            $coupon = new Coupon();
-            $coupon->template_id = $this->template->primaryKey;
-            $coupon->merchant_id = $this->merchant->primaryKey;
-            $coupon->pos_id = $this->pos->primaryKey;
-            $coupon->client = $this->client;
-            /** TODO сделать правильное сообщение */
-            $coupon->message = 'Std message';
-            $coupon->uuid = $this->uuid;
-            $coupon->major = $this->major;
-            $coupon->minor = $this->minor;
-            $coupon->serial_number = $serialNumber;
-            $coupon->save(false);
-
+        $this->serialNumber = Yii::$app->security->generateRandomString(10);
+        if ($this->coupPath = Yii::$app->pass->generatePass($this)) {
+            $this->createCouponRecord($this->serialNumber);
             return $this->coupPath;
         } else {
             $this->addError('error', 'Error while creating coupon');
         }
+    }
+
+    public function getBarcodeMessage()
+    {
+        $message = $this->findMessage();
+        if (!$message) {
+            $message = $this->generateMessage();
+        }
+        return $message;
+    }
+
+    private function findMessage()
+    {
+        $message = BarcodeMessage::find()
+            ->select('message')
+            ->where([
+                'merchant_id' => $this->merchant->primaryKey,
+                'utilize' => null
+            ])
+            ->orderBy(['create_date' => SORT_ASC])
+            ->one();
+
+        return $message;
+    }
+
+    private function generateMessage()
+    {
+        $lastCoupon = Coupon::find()->select('coupon_id')->orderBy(['coupon_id' => SORT_DESC])->asArray()->one();
+        $nextCouponId = $lastCoupon['coupon_id'] + 1;
+        return RandomString::generate(BarcodeMessage::MESSAGE_LENGTH - strlen($nextCouponId)).$nextCouponId;
+    }
+
+    public function createCouponRecord($serialNumber)
+    {
+        $coupon = new Coupon();
+        $coupon->setAttributes([
+            'template_id' => $this->template->primaryKey,
+            'merchant_id' => $this->merchant->primaryKey,
+            'pos_id' => $this->pos->primaryKey,
+            'client' => $this->client,
+            'message' => $this->message,
+            'uuid' => $this->uuid,
+            'major' => $this->major,
+            'minor' => $this->minor,
+            'serial_number' => $serialNumber,
+        ]);
+        $coupon->save(false);
     }
 }

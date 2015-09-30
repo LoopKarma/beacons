@@ -17,6 +17,7 @@ use yii\behaviors\TimestampBehavior;
  */
 class BarcodeMessage extends \yii\db\ActiveRecord
 {
+    const MESSAGE_LENGTH = 8;
     /**
      * @inheritdoc
      */
