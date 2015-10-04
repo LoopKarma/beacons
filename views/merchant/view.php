@@ -32,6 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'create_date',
             'update_date',
             'uuid',
+            'major',
             'name',
             'description',
             'pass_type_id',

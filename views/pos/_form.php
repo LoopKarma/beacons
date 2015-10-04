@@ -18,8 +18,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'beacon_identifier')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'major')->textInput(['maxlength' => true]) ?>
-
     <?= $form->field($model, 'minor')->textInput(['maxlength' => true]) ?>
 
     <div class="form-group">

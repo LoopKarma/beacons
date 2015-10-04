@@ -12,6 +12,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string $create_date
  * @property string $update_date
  * @property string $uuid
+ * @property string $major
  * @property string $name
  * @property string $description
  * @property string $pass_type_id
@@ -33,10 +34,11 @@ class Merchant extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['uuid', 'name', 'pass_type_id'], 'required'],
+            [['uuid', 'name', 'pass_type_id', 'major'], 'required'],
             [['cert_files'], 'required', 'on' => 'create'],
-            [['uuid'], 'unique'],
+            [['uuid', 'major'], 'unique'],
             [['uuid'], 'string', 'max' => 32],
+            [['major'], 'string', 'max' => 20],
             [['name'], 'string', 'max' => 100],
             [['description', 'pass_type_id'], 'string', 'max' => 256]
         ];
@@ -52,6 +54,7 @@ class Merchant extends \yii\db\ActiveRecord
             'create_date' => 'Дата создания',
             'update_date' => 'Дата изменения',
             'uuid' => 'UUID',
+            'major' => 'Major маячка',
             'name' => 'Название',
             'description' => 'Описание',
             'pass_type_id' => 'Pass Type ID',
