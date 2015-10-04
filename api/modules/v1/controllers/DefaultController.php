@@ -3,7 +3,6 @@ namespace app\api\modules\v1\controllers;
 
 use Yii;
 use yii\rest\Controller;
-use yii\filters\VerbFilter;
 use app\api\modules\v1\models\CouponGenerator;
 use yii\web\NotFoundHttpException;
 
@@ -13,7 +12,7 @@ class DefaultController extends Controller
     {
         $behaviors = parent::behaviors();
         $behaviors['verbs'] = [
-            'class' => VerbFilter::className(),
+            'class' => \yii\filters\VerbFilter::className(),
             'actions' => [
                 'index'  => ['get'],
             ],
