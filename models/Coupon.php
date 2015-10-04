@@ -3,7 +3,9 @@
 namespace app\models;
 
 use Yii;
+use yii\base\InvalidParamException;
 use yii\behaviors\TimestampBehavior;
+use yii\validators\DateValidator;
 
 /**
  * This is the model class for table "ai_coupon".
@@ -106,5 +108,41 @@ class Coupon extends \yii\db\ActiveRecord
     public function getPos()
     {
         return $this->hasOne(Pos::className(), ['pos_id' => 'pos_id']);
+    }
+
+    public function getCouponCount($fromDate, $toDate = false)
+    {
+        $validator = new DateValidator(['format' => 'Y-m-d']);
+        if (!$validator->validate($fromDate) || ($toDate && !$validator->validate($fromDate))) {
+            throw new InvalidParamException('Invalid date format');
+        } else {
+            $query = $this->find()->where(['>=', 'create_date', $fromDate]);
+            if ($toDate) {
+                $query->andWhere(['<=', 'create_date', $toDate]);
+            }
+            return $query->count();
+        }
+    }
+
+    public function getAttributeValueAmongAll($attribute, $action)
+    {
+        if (in_array($attribute, $this->attributes())) {
+            if (in_array($action, ['min', 'max'])) {
+                $res = $this
+                    ->find()
+                    ->select([$attribute, 'COUNT(*) as cnt'])
+                    ->groupBy($attribute)
+                    ->orderBy(['cnt' => $action == 'max' ? SORT_DESC : SORT_ASC])
+                    ->limit(1)
+                    ->asArray()
+                    ->one();
+
+                return $res[$attribute];
+            } else {
+                throw new InvalidParamException('Action is not exist');
+            }
+        } else {
+            throw new InvalidParamException('Attribute ' . $attribute .' is not exist');
+        }
     }
 }
