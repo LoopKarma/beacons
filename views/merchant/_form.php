@@ -19,6 +19,8 @@ use yii\helpers\ArrayHelper;
 
     <?= $form->field($model, 'uuid')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'major')->textInput(['maxlength' => true]) ?>
+
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>

@@ -19,7 +19,7 @@ class PosSearch extends Pos
     {
         return [
             [['pos_id', 'merchant_id'], 'integer'],
-            [['create_date', 'update_date', 'address', 'beacon_identifier', 'major', 'minor'], 'safe'],
+            [['create_date', 'update_date', 'address', 'beacon_identifier', 'minor'], 'safe'],
         ];
     }
 
@@ -64,7 +64,6 @@ class PosSearch extends Pos
 
         $query->andFilterWhere(['like', 'address', $this->address])
             ->andFilterWhere(['like', 'beacon_identifier', $this->beacon_identifier])
-            ->andFilterWhere(['like', 'major', $this->major])
             ->andFilterWhere(['like', 'minor', $this->minor]);
 
         return $dataProvider;

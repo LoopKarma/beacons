@@ -1,9 +1,9 @@
 <?php
 
-use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 use kartik\select2;
+use yii\helpers\Html;
 use kartik\file\FileInput;
+use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
@@ -23,7 +23,7 @@ use yii\helpers\ArrayHelper;
         <?= Html::label('Точки продаж') ?>
         <?= select2\Select2::widget([
             'name' => 'pos',
-            'value' => $model->getPoses(),
+            'value' => $model->getPoses('address'),
             'data' => \app\models\Pos::getPointsArray(),
             'options' => ['placeholder' => 'Выберите точки продаж'],
             'pluginOptions' => [

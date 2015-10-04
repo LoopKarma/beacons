@@ -28,15 +28,13 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'merchant_id',
                 'value' => 'merchant.name'
-            ]
-            ,
+            ],
             //'create_date',
             //'update_date',
             'address',
             'beacon_identifier',
             // 'major',
-            // 'minor',
-
+            'minor',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

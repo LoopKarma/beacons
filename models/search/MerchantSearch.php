@@ -19,7 +19,7 @@ class MerchantSearch extends Merchant
     {
         return [
             [['merchant_id'], 'integer'],
-            [['create_date', 'update_date', 'uuid', 'name', 'description', 'pass_type_id', 'cert_files'], 'safe'],
+            [['create_date', 'update_date', 'uuid', 'major', 'name', 'description', 'pass_type_id', 'cert_files'], 'safe'],
         ];
     }
 
@@ -62,6 +62,7 @@ class MerchantSearch extends Merchant
         ]);
 
         $query->andFilterWhere(['like', 'uuid', $this->uuid])
+            ->andFilterWhere(['like', 'major', $this->major])
             ->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'description', $this->description])
             ->andFilterWhere(['like', 'pass_type_id', $this->pass_type_id])

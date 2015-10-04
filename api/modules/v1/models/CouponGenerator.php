@@ -9,8 +9,6 @@ use app\models\Merchant;
 use app\models\Coupon;
 use yii\db\ActiveRecord;
 use app\models\CouponTemplate;
-use yii\helpers\VarDumper;
-use app\helpers\RandomString;
 
 class CouponGenerator extends Model
 {
@@ -59,11 +57,10 @@ class CouponGenerator extends Model
 
     public function beforeValidate()
     {
-        $this->merchant = Merchant::find()->where(['uuid' => $this->uuid])->one();
+        $this->merchant = Merchant::find()->where(['uuid' => $this->uuid, 'major' => $this->major])->one();
         if ($this->merchant) {
             $this->pos = Pos::find()->where([
                 'merchant_id' => $this->merchant->primaryKey,
-                'major' => $this->major,
                 'minor' => $this->minor
             ])->one();
             if ($this->pos) {
@@ -113,13 +110,14 @@ class CouponGenerator extends Model
         } else {
             $this->addError('error', 'Error while creating coupon');
         }
+        return false;
     }
 
     public function getBarcodeMessage()
     {
         $message = $this->findMessage();
         if (!$message) {
-            $message = $this->generateMessage();
+            $message = BarcodeMessage::generateMessage();
         }
         return $message;
     }
@@ -138,12 +136,7 @@ class CouponGenerator extends Model
         return $message;
     }
 
-    private function generateMessage()
-    {
-        $lastCoupon = Coupon::find()->select('coupon_id')->orderBy(['coupon_id' => SORT_DESC])->asArray()->one();
-        $nextCouponId = $lastCoupon['coupon_id'] + 1;
-        return RandomString::generate(BarcodeMessage::MESSAGE_LENGTH - strlen($nextCouponId)).$nextCouponId;
-    }
+
 
     public function createCouponRecord($serialNumber)
     {

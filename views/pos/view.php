@@ -37,7 +37,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'update_date',
             'address',
             'beacon_identifier',
-            'major',
             'minor',
         ],
     ]) ?>
