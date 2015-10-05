@@ -31,7 +31,8 @@ class DefaultController extends Controller
                 return $this->renderFile($couponPath);
             }
         }
-        $error = (string)reset($model->firstErrors);
+        $errors = $model->firstErrors;
+        $error = (string)reset($errors);
         throw new NotFoundHttpException($error);
     }
 }

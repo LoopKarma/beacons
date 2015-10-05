@@ -95,7 +95,7 @@ class CouponGenerator extends Model
 
     public function afterValidate()
     {
-        if (!$this->template->without_barcode) {
+        if (isset($this->template) && !$this->template->without_barcode) {
             $this->message = $this->getBarcodeMessage();
         }
         parent::afterValidate();
