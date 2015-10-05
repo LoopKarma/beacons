@@ -37,7 +37,7 @@ class Merchant extends \yii\db\ActiveRecord
             [['uuid', 'name', 'pass_type_id', 'major'], 'required'],
             [['cert_files'], 'required', 'on' => 'create'],
             [['uuid', 'major'], 'unique'],
-            [['uuid'], 'string', 'max' => 32],
+            [['uuid'], 'string', 'max' => 36],
             [['major'], 'string', 'max' => 20],
             [['name'], 'string', 'max' => 100],
             [['description', 'pass_type_id'], 'string', 'max' => 256]
