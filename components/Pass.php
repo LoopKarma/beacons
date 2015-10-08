@@ -4,6 +4,7 @@ namespace app\components;
 use Yii;
 use yii\base\component;
 use PKPass\PKPass;
+use yii\db\ActiveRecord;
 use yii\helpers\Json;
 use app\api\modules\v1\models\CouponGenerator;
 
@@ -33,7 +34,7 @@ class Pass extends Component
             'description'        => $model->template->description,
             'formatVersion'      => 1,
             'organizationName'   => $model->template->merchant->name,
-            'passTypeIdentifier' => $model->template->merchant->uuid,
+            'passTypeIdentifier' => $model->template->merchant->pass_type_id,
             'serialNumber'       => $model->serialNumber,
             'teamIdentifier'     => $this->teamIdentifier,
         ];
@@ -75,13 +76,7 @@ class Pass extends Component
             $webServiceKeys
         );
         $pkPass->setJSON(Json::encode($passData));
-        $pkPass->addFile($model->template->iconFile->getPath(), 'icon.png');
-        if ($model->template->logoFile) {
-            $pkPass->addFile($model->template->logoFile->getPath(), 'logo.png');
-        }
-        if ($model->template->stripImageFile) {
-            $pkPass->addFile($model->template->stripImageFile->getPath(), 'strip.png');
-        }
+        $this->addPossibleImages($pkPass, $model->template);
         $filePath = $this->getPassFilePath().mktime().'.pkpass';
         if (!$res = $pkPass->create(false)) {
             Yii::error('Error: '.$pkPass->getError());
@@ -92,6 +87,18 @@ class Pass extends Component
             }
         }
         return false;
+    }
+
+    protected function addPossibleImages(PKPass &$pkPass, ActiveRecord $template)
+    {
+        $pkPass->addFile($template->iconFile->getPath(), 'icon.png');
+        if ($template->logoFile) {
+            $pkPass->addFile($template->logoFile->getPath(), 'logo.png');
+        }
+        if ($template->stripImageFile) {
+            $pkPass->addFile($template->stripImageFile->getPath(), 'strip.png');
+        }
+        //TODO добавить все остальные файлы
     }
 
     protected function getPassFilePath()

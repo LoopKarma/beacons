@@ -27,8 +27,11 @@ class DefaultController extends Controller
         if ($model->load(Yii::$app->request->get(), '') && $model->validate()) {
             if ($couponPath = $model->generateCoupon()) {
                 $headers = Yii::$app->response->headers;
+                $headers->set('Pragma', 'no-cache');
                 $headers->set('Content-type', 'application/vnd.apple.pkpass');
-                return $this->renderFile($couponPath);
+                $headers->set('Content-length', filesize($couponPath));
+
+                return Yii::$app->response->sendFile($couponPath);
             }
         }
         $errors = $model->firstErrors;
