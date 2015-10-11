@@ -11,6 +11,7 @@ use Yii;
 use app\models\User;
 use yii\console\Controller;
 use yii\rbac\DbManager;
+use app\rbac\CouponOwnerRule;
 
 class RbacController extends Controller
 {
@@ -23,10 +24,21 @@ class RbacController extends Controller
 
         $added = 0;
 
+
+        // add rule
+        $coupOwnerRule = new CouponOwnerRule();
+        $auth->add($coupOwnerRule);
+        //create permission
+        $viewCoupon = $auth->createPermission('view coupon');
+        $viewCoupon->ruleName = $coupOwnerRule->name;
+        $auth->add($viewCoupon);
+
+
         //add merchant role
         $roleMerchant = $auth->createRole(User::ROLE_MERCHANT);
         $roleMerchant->description = 'Роль организации';
         if ($auth->add($roleMerchant)) {
+            $auth->addChild($roleMerchant, $viewCoupon);
             $added++;
         }
 

@@ -18,8 +18,37 @@ class TemplateSearch extends CouponTemplate
     public function rules()
     {
         return [
-            [['template_id', 'active', 'merchant_id', 'without_barcode'], 'integer'],
-            [['create_date', 'update_date', 'coupon', 'background_color', 'foreground_color', 'organization_name', 'team_identifier', 'logo_text', 'description', 'beacon_relevant_text', 'barcode_format', 'barcode_message_encoding', 'icon', 'icon_retina', 'logo', 'logo_retina', 'strip_image', 'strip_image_retina'], 'safe'],
+            [
+                ['template_id', 'active', 'merchant_id', 'without_barcode', 'send_unlimited'],
+                'integer'
+            ],
+            [
+                [
+                    'name',
+                    'create_date',
+                    'update_date',
+                    'coupon',
+                    'background_color',
+                    'foreground_color',
+                    'organization_name',
+                    'team_identifier',
+                    'logo_text',
+                    'description',
+                    'beacon_relevant_text',
+                    'barcode_format',
+                    'barcode_message_encoding',
+                    'icon',
+                    'icon2x',
+                    'icon3x',
+                    'logo',
+                    'logo2x',
+                    'logo3x',
+                    'strip',
+                    'strip2x',
+                    'strip3x',
+                ],
+                'safe'
+            ],
         ];
     }
 
@@ -45,6 +74,9 @@ class TemplateSearch extends CouponTemplate
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
         ]);
 
         $this->load($params);
@@ -57,15 +89,26 @@ class TemplateSearch extends CouponTemplate
 
         $query->andFilterWhere([
             'template_id' => $this->template_id,
-            'create_date' => $this->create_date,
             'update_date' => $this->update_date,
             'active' => $this->active,
             'merchant_id' => $this->merchant_id,
             'without_barcode' => $this->without_barcode,
+            'send_unlimited' => $this->send_unlimited,
+            'icon' => $this->icon,
+            'icon2x' => $this->icon2x,
+            'icon3x' => $this->icon3x,
+            'logo' => $this->logo,
+            'logo2x' => $this->logo2x,
+            'logo3x' => $this->logo3x,
+            'strip' => $this->strip,
+            'strip2x' => $this->strip2x,
+            'strip3x' => $this->strip3x,
         ]);
 
         $query->andFilterWhere(['like', 'coupon', $this->coupon])
             ->andFilterWhere(['like', 'background_color', $this->background_color])
+            ->andFilterWhere(['like', 'create_date', $this->create_date])
+            ->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'foreground_color', $this->foreground_color])
             ->andFilterWhere(['like', 'organization_name', $this->organization_name])
             ->andFilterWhere(['like', 'team_identifier', $this->team_identifier])
@@ -73,13 +116,7 @@ class TemplateSearch extends CouponTemplate
             ->andFilterWhere(['like', 'description', $this->description])
             ->andFilterWhere(['like', 'beacon_relevant_text', $this->beacon_relevant_text])
             ->andFilterWhere(['like', 'barcode_format', $this->barcode_format])
-            ->andFilterWhere(['like', 'barcode_message_encoding', $this->barcode_message_encoding])
-            ->andFilterWhere(['like', 'icon', $this->icon])
-            ->andFilterWhere(['like', 'icon_retina', $this->icon_retina])
-            ->andFilterWhere(['like', 'logo', $this->logo])
-            ->andFilterWhere(['like', 'logo_retina', $this->logo_retina])
-            ->andFilterWhere(['like', 'strip_image', $this->strip_image])
-            ->andFilterWhere(['like', 'strip_image_retina', $this->strip_image_retina]);
+            ->andFilterWhere(['like', 'barcode_message_encoding', $this->barcode_message_encoding]);
 
         return $dataProvider;
     }

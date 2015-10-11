@@ -46,7 +46,7 @@ AppAsset::register($this);
             ]);
         } else {
             $items = ArrayHelper::merge($items, [
-                ['label' => 'Отчеты', 'url' => ['/site/reports']],
+                ['label' => 'Ваши купоны', 'url' => ['/coupon/index']],
                 ['label' => 'Валидация купона', 'url' => ['/coupon/validate']],
             ]);
         }

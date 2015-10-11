@@ -12,6 +12,7 @@ use app\models\Coupon;
  */
 class CouponSearch extends Coupon
 {
+    public $merchant_id;
     /**
      * @inheritdoc
      */
@@ -42,9 +43,15 @@ class CouponSearch extends Coupon
     public function search($params)
     {
         $query = Coupon::find();
+        if ($this->merchant_id) {
+            $query->where(['merchant_id' => $this->merchant_id]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 20,
+            ],
         ]);
 
         $this->load($params);
@@ -57,7 +64,6 @@ class CouponSearch extends Coupon
 
         $query->andFilterWhere([
             'coupon_id' => $this->coupon_id,
-            'create_date' => $this->create_date,
             'template_id' => $this->template_id,
             'merchant_id' => $this->merchant_id,
             'pos_id' => $this->pos_id,
@@ -66,6 +72,7 @@ class CouponSearch extends Coupon
 
         $query->andFilterWhere(['like', 'client', $this->client])
             ->andFilterWhere(['like', 'message', $this->message])
+            ->andFilterWhere(['like', 'create_date', $this->create_date])
             ->andFilterWhere(['like', 'uuid', $this->uuid])
             ->andFilterWhere(['like', 'major', $this->major])
             ->andFilterWhere(['like', 'minor', $this->minor])

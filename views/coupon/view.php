@@ -9,6 +9,7 @@ use yii\widgets\DetailView;
 $this->title = 'Купон [' . $model->coupon_id . ']';
 $this->params['breadcrumbs'][] = ['label' => 'Купоны', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+$isMerchant = isset(Yii::$app->user->identity->merchant_id);
 ?>
 <div class="coupon-view">
 
@@ -20,14 +21,41 @@ $this->params['breadcrumbs'][] = $this->title;
             'coupon_id',
             'create_date',
             'serial_number',
-            'merchant_id',
-            'uuid',
-            'pos_id',
-            'major',
-            'minor',
+            [
+                'attribute' => 'merchant_id',
+                'value' => "{$model->merchant->name} [{$model->merchant->merchant_id}]",
+                'visible' => !$isMerchant
+            ],
+            [
+                'attribute' => 'uuid',
+                'visible' => !$isMerchant
+            ],
+            [
+                'attribute' => 'pos_id',
+                'visible' => !$isMerchant
+            ],
+            [
+                'label' => 'Адрес точки',
+                'value' => $model->pos->address ?: '-',
+            ],
+            [
+                'attribute' => 'major',
+                'visible' => !$isMerchant
+            ],
+            [
+                'attribute' => 'minor',
+                'visible' => !$isMerchant
+            ],
             'client',
             'message',
-            'template_id',
+            [
+                'attribute' => 'template_id',
+                'visible' => !$isMerchant
+            ],
+            [
+                'label' => 'Название шаблона',
+                'value' => $model->template->name ?: '-',
+            ],
         ],
     ]) ?>
 

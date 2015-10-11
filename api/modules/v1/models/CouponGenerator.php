@@ -83,14 +83,16 @@ class CouponGenerator extends Model
 
     public function validateIfCouponAlreadyExist()
     {
-        $coupon = Coupon::find()->where([
-            'client' => $this->client,
-            'merchant_id' => $this->merchant->primaryKey,
-            'pos_id' => $this->pos->primaryKey,
-            'template_id' => $this->template->primaryKey,
-        ])->one();
-        if ($coupon) {
-            $this->addError('error', 'You already have a coupon for this point');
+        if (!$this->template->send_unlimited) {
+            $coupon = Coupon::find()->where([
+                'client' => $this->client,
+                'merchant_id' => $this->merchant->primaryKey,
+                'pos_id' => $this->pos->primaryKey,
+                'template_id' => $this->template->primaryKey,
+            ])->one();
+            if ($coupon) {
+                $this->addError('error', 'You already have a coupon for this point');
+            }
         }
     }
 

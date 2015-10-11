@@ -15,6 +15,10 @@ class Pass extends Component
     public $teamIdentifier;
     public $certificatePassword;
 
+    /**
+     * @param CouponGenerator $model
+     * @return bool|string
+     */
     public function generatePass(CouponGenerator $model)
     {
         $pkPass = new PKPass();
@@ -75,7 +79,7 @@ class Pass extends Component
             $visualAppearanceKeys,
             $webServiceKeys
         );
-        $pkPass->setJSON(Json::encode($passData));
+        $pkPass->setJson(Json::encode($passData));
         $this->addPossibleImages($pkPass, $model->template);
         $filePath = $this->getPassFilePath().mktime().'.pkpass';
         if (!$res = $pkPass->create(false)) {
@@ -89,23 +93,36 @@ class Pass extends Component
         return false;
     }
 
+    /**
+     * @param PKPass $pkPass
+     * @param \app\models\CouponTemplate $template
+     */
     protected function addPossibleImages(PKPass &$pkPass, ActiveRecord $template)
     {
-        $pkPass->addFile($template->iconFile->getPath(), 'icon.png');
-        if ($template->logoFile) {
-            $pkPass->addFile($template->logoFile->getPath(), 'logo.png');
-        }
-        if ($template->stripImageFile) {
-            $pkPass->addFile($template->stripImageFile->getPath(), 'strip.png');
-        }
-        //TODO добавить все остальные файлы
+        $pkPass->addFile($template->getFilePath('icon'), 'icon.png');
+        $pkPass->addFile($template->getFilePath('icon2x'), 'icon@2x.png');
+        $pkPass->addFile($template->getFilePath('icon3x'), 'icon@3x.png');
+
+        $pkPass->addFile($template->getFilePath('logo'), 'logo.png');
+        $pkPass->addFile($template->getFilePath('logo2x'), 'logo@2x.png');
+        $pkPass->addFile($template->getFilePath('logo3x'), 'logo@3x.png');
+
+        $pkPass->addFile($template->getFilePath('strip'), 'strip.png');
+        $pkPass->addFile($template->getFilePath('strip2x'), 'strip@2x.png');
+        $pkPass->addFile($template->getFilePath('strip3x'), 'strip@3x.png');
     }
 
+    /**
+     * @return bool|string
+     */
     protected function getPassFilePath()
     {
         return Yii::getAlias($this->passFilePath);
     }
 
+    /**
+     * @return bool|string
+     */
     protected function getWwdrCertPath()
     {
         return Yii::getAlias($this->wwdrCertPath);

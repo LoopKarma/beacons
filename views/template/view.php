@@ -28,11 +28,16 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'template_id',
+            'name',
             'create_date',
             'update_date',
             [
                 'attribute' => 'active',
                 'value' => $model->active ? 'Да' : 'Нет',
+            ],
+            [
+                'attribute' => 'send_unlimited',
+                'value' => $model->send_unlimited ? 'Да' : 'Нет',
             ],
             [
                 'attribute' => 'merchant_id',
@@ -52,38 +57,66 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => '<pre>' . $model->coupon . '</pre>'
             ],
-            'beacon_relevant_text',
-            'barcode_format',
-            'barcode_message_encoding',
+            [
+                'attribute' => 'without_barcode',
+                'value' => $model->without_barcode ? 'Баркода нет' : 'Баркод есть',
+            ],
+            [
+                'attribute' => 'beacon_relevant_text',
+                'visible' => !$model->without_barcode,
+            ],
+            [
+                'attribute' => 'barcode_format',
+                'visible' => !$model->without_barcode,
+            ],
+            [
+                'attribute' => 'barcode_message_encoding',
+                'visible' => !$model->without_barcode,
+            ],
             [
                 'attribute' => 'icon',
                 'format' => 'raw',
-                'value' => $model->iconFile ? Html::img($model->iconFile->getUrlPath()) : false,
+                'value' => ($path = $model->getFileUrlPath('icon')) ? Html::img($path) : false,
             ],
             [
-                'attribute' => 'icon_retina',
+                'attribute' => 'icon2x',
                 'format' => 'raw',
-                'value' => $model->iconRetinaFile ? Html::img($model->iconRetinaFile->getUrlPath()) : false,
+                'value' => ($path = $model->getFileUrlPath('icon2x')) ? Html::img($path) : false,
+            ],
+            [
+                'attribute' => 'icon3x',
+                'format' => 'raw',
+                'value' => ($path = $model->getFileUrlPath('icon3x')) ? Html::img($path) : false,
             ],
             [
                 'attribute' => 'logo',
                 'format' => 'raw',
-                'value' => $model->logoFile ? Html::img($model->logoFile->getUrlPath()) : false,
+                'value' => ($path = $model->getFileUrlPath('logo')) ? Html::img($path) : false,
             ],
             [
-                'attribute' => 'logo_retina',
+                'attribute' => 'logo2x',
                 'format' => 'raw',
-                'value' => $model->logoRetinaFile ? Html::img($model->logoRetinaFile->getUrlPath()) : false,
+                'value' => ($path = $model->getFileUrlPath('logo2x')) ? Html::img($path) : false,
             ],
             [
-                'attribute' => 'strip_image',
+                'attribute' => 'logo3x',
                 'format' => 'raw',
-                'value' => $model->stripImageFile ? Html::img($model->stripImageFile->getUrlPath()) : false,
+                'value' => ($path = $model->getFileUrlPath('logo3x')) ? Html::img($path) : false,
             ],
             [
-                'attribute' => 'strip_image_retina',
+                'attribute' => 'strip',
                 'format' => 'raw',
-                'value' => $model->stripImageRetinaFile ? Html::img($model->stripImageRetinaFile->getUrlPath()) : false,
+                'value' => ($path = $model->getFileUrlPath('strip')) ? Html::img($path) : false,
+            ],
+            [
+                'attribute' => 'strip2x',
+                'format' => 'raw',
+                'value' => ($path = $model->getFileUrlPath('strip2x')) ? Html::img($path) : false,
+            ],
+            [
+                'attribute' => 'strip3x',
+                'format' => 'raw',
+                'value' => ($path = $model->getFileUrlPath('strip3x')) ? Html::img($path) : false,
             ],
         ],
     ]) ?>

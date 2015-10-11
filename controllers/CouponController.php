@@ -6,8 +6,10 @@ use Yii;
 use app\models\Coupon;
 use app\models\search\CouponSearch;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * CouponController implements the CRUD actions for Coupon model.
@@ -17,6 +19,21 @@ class CouponController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['create', 'update', 'delete'],
+                        'allow' => true,
+                        'roles' => [\app\models\User::ROLE_ADMIN],
+                    ],
+                    [
+                        'actions' => ['index', 'view'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
@@ -32,7 +49,12 @@ class CouponController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new CouponSearch();
+        if (Yii::$app->user->identity->merchant_id) {
+            $searchModel = new CouponSearch(['merchant_id' => Yii::$app->user->identity->merchant_id]);
+        } else {
+            $searchModel = new CouponSearch();
+        }
+
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -48,9 +70,14 @@ class CouponController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        $model = $this->findModel($id);
+        if (Yii::$app->user->can('view coupon', ['coupon' => $model])) {
+            return $this->render('view', [
+                'model' => $model,
+            ]);
+        } else {
+            throw new ForbiddenHttpException('Нет доступа');
+        }
     }
 
     /**

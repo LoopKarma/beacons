@@ -18,10 +18,10 @@ $this->title = $name;
     </div>
 
     <p>
-        The above error occurred while the Web server was processing your request.
+        Ошибка произошла, когда сервер обрабатывал ваш запрос.
     </p>
     <p>
-        Please contact us if you think this is a server error. Thank you.
+        <a href="mailto:<?= Yii::$app->params['adminEmail']?>"> Пожалуйста, свяжитесь с нами, если считаете, что этой ошибки не должно быть.</a>
     </p>
 
 </div>

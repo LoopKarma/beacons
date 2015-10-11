@@ -55,13 +55,13 @@ class Coupon extends \yii\db\ActiveRecord
     {
         return [
             'coupon_id' => 'ID купона',
-            'create_date' => 'Дата создания',
+            'create_date' => 'Дата генерации',
             'template_id' => 'ID шаблона',
-            'merchant_id' => 'ID мерчанта',
+            'merchant_id' => 'Мерчант',
             'pos_id' => 'Точка продаж',
             'client' => 'Client',
             'confirmed' => 'Подтверждено',
-            'message' => ' ID',
+            'message' => 'Сообщение',
             'uuid' => 'Uuid',
             'major' => 'Major',
             'minor' => 'Minor',
@@ -110,7 +110,7 @@ class Coupon extends \yii\db\ActiveRecord
         return $this->hasOne(Pos::className(), ['pos_id' => 'pos_id']);
     }
 
-    public function getCouponCount($fromDate, $toDate = false)
+    public function getCouponCount($fromDate, $toDate = false, $merchant = false)
     {
         $validator = new DateValidator(['format' => 'Y-m-d']);
         if (!$validator->validate($fromDate) || ($toDate && !$validator->validate($fromDate))) {
@@ -120,19 +120,26 @@ class Coupon extends \yii\db\ActiveRecord
             if ($toDate) {
                 $query->andWhere(['<=', 'create_date', $toDate]);
             }
+            if ($merchant) {
+                $query->andWhere(['merchant_id' => $merchant]);
+            }
             return $query->count();
         }
     }
 
-    public function getAttributeValueAmongAll($attribute, $action)
+    public function getAttributeValueAmongAll($attribute, $action, $merchant = false)
     {
         if (in_array($attribute, $this->attributes())) {
             if (in_array($action, ['min', 'max'])) {
-                $res = $this
+                $query = $this
                     ->find()
                     ->select([$attribute, 'COUNT(*) as cnt'])
                     ->groupBy($attribute)
-                    ->orderBy(['cnt' => $action == 'max' ? SORT_DESC : SORT_ASC])
+                    ->orderBy(['cnt' => $action == 'max' ? SORT_DESC : SORT_ASC]);
+                if ($merchant) {
+                    $query->where(['merchant_id' => $merchant]);
+                }
+                $res = $query
                     ->limit(1)
                     ->asArray()
                     ->one();

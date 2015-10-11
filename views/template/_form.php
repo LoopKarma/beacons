@@ -5,17 +5,30 @@ use yii\helpers\Html;
 use kartik\file\FileInput;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
+use yii\web\JsExpression;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CouponTemplate */
 /* @var $form yii\widgets\ActiveForm */
+
+$isQR = ($model->barcode_format == 'PKBarcodeFormatQR');
+$posInitValue = !$model->isNewRecord ? $model->getPoses() : null;
+$posInitText = !$model->isNewRecord ? $model->getPoses('address') : null;
 ?>
 
 <div class="coupon-template-form">
 
     <?php $form = ActiveForm::begin([
-        'options'=>['enctype'=>'multipart/form-data']
+        'options'=>[
+            'enctype'=>'multipart/form-data',
+            'id' => 'template-form'
+        ]
     ]); ?>
+
+    <?php $model->isNewRecord ? $model->active = 1 : null; ?>
+    <?= $form->field($model, 'active')->checkbox()?>
+
+    <?= $form->field($model, 'send_unlimited')->checkbox()?>
 
     <?= $form->field($model, 'merchant_id')->dropDownList(\app\models\Merchant::getMerchantList()) ?>
 
@@ -23,12 +36,20 @@ use yii\helpers\ArrayHelper;
         <?= Html::label('Точки продаж') ?>
         <?= select2\Select2::widget([
             'name' => 'pos',
-            'value' => $model->getPoses('address'),
-            'data' => \app\models\Pos::getPointsArray(),
+            'value' => $posInitValue,
+            'initValueText' => $posInitText,
             'options' => ['placeholder' => 'Выберите точки продаж'],
             'pluginOptions' => [
-                'allowClear' => true,
+                'allowClear' => false,
                 'multiple' => true,
+                'ajax' => [
+                    'url' => yii\helpers\Url::to(['template/get-merchant-pos']),
+                    'dataType' => 'json',
+                    'data' => new JsExpression('function(params) {
+                        var merchant = $("#coupontemplate-merchant_id").val();
+                        return {"merchantId" : merchant};
+                    }')
+                ],
             ],
             'size' => 'md',
         ]) ?>
@@ -50,6 +71,8 @@ use yii\helpers\ArrayHelper;
 
     <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+
     <?= $form->field($model, 'coupon')->textarea(['rows' => 6]) ?>
 
     <?= $form->field($model, 'background_color')->textInput(['maxlength' => true]) ?>
@@ -63,6 +86,7 @@ use yii\helpers\ArrayHelper;
 
     <?= $form->field($model, 'without_barcode')->checkbox()?>
 
+
     <?= $form->field($model, 'barcode_format')
         ->dropDownList(array_combine($model::BARCODE_FORMAT, $model::BARCODE_FORMAT))?>
 
@@ -71,7 +95,7 @@ use yii\helpers\ArrayHelper;
         'placeholder' => $model::DEF_BARCODE_MESSAGE_ENCODING,
     ]) ?>
 
-    <?php $isQR = ($model->barcode_format == 'PKBarcodeFormatQR')?>
+
 
     <?php $filePluginOptions = [
         'browseClass' => 'btn btn-success',
@@ -89,83 +113,75 @@ use yii\helpers\ArrayHelper;
         'language' => 'ru'
     ] ?>
 
-    <?php if ($file = $model->iconFile) {
-        $filePluginOptions['initialPreview'] =  Html::img($file->getUrlPath());
-    } else {
-        $filePluginOptions['initialPreview'] = false;
-    }?>
+    <?php #icon?>
     <?= $form->field($model, 'icon')->widget(FileInput::className(), [
         'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
-            'maxImageHeight' => 29,
             'maxImageWidth' => 29,
+            'maxImageHeight' => 29,
+            'initialPreview' => $model->getHtmlImage('icon'),
+        ]),
+    ])?>
+    <?= $form->field($model, 'icon2x')->widget(FileInput::className(), [
+        'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
+            'maxImageWidth' => 58,
+            'maxImageHeight' => 58,
+            'initialPreview' => $model->getHtmlImage('icon2x'),
+        ]),
+    ])?>
+    <?= $form->field($model, 'icon3x')->widget(FileInput::className(), [
+        'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
+            'maxImageWidth' => 87,
+            'maxImageHeight' => 87,
+            'initialPreview' => $model->getHtmlImage('icon3x'),
         ]),
     ])?>
 
-
-    <?php if ($file = $model->iconRetinaFile) {
-        $filePluginOptions['initialPreview'] =  Html::img($file->getUrlPath());
-    } else {
-        $filePluginOptions['initialPreview'] = false;
-    }?>
-    <?= $form->field($model, 'icon_retina')->widget(FileInput::className(), [
-
-        'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
-            'maxImageHeight' => 58,
-            'maxImageWidth' => 58,
-        ])
-    ])?>
-
-
-    <?php if ($file = $model->logoFile) {
-        $filePluginOptions['initialPreview'] =  Html::img($file->getUrlPath());
-    } else {
-        $filePluginOptions['initialPreview'] = false;
-    }?>
+    <?php #logo?>
     <?= $form->field($model, 'logo')->widget(FileInput::className(), [
         'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
-            'maxImageHeight' => 50,
             'maxImageWidth' => 160,
-        ])
+            'maxImageHeight' => 50,
+            'initialPreview' => $model->getHtmlImage('logo'),
+        ]),
     ])?>
-
-    <?php if ($file = $model->logoRetinaFile) {
-        $filePluginOptions['initialPreview'] =  Html::img($file->getUrlPath());
-    } else {
-        $filePluginOptions['initialPreview'] = false;
-    }?>
-    <?= $form->field($model, 'logo_retina')->widget(FileInput::className(), [
+    <?= $form->field($model, 'logo2x')->widget(FileInput::className(), [
         'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
+            'maxImageWidth' => 320,
             'maxImageHeight' => 100,
-            'maxImageWidth' => 312,
-        ])
+            'initialPreview' => $model->getHtmlImage('logo2x'),
+        ]),
     ])?>
-
-
-    <?php if ($file = $model->stripImageFile) {
-        $filePluginOptions['initialPreview'] =  Html::img($file->getUrlPath());
-    } else {
-        $filePluginOptions['initialPreview'] = false;
-    }?>
-    <?= $form->field($model, 'strip_image')->widget(FileInput::className(), [
+    <?= $form->field($model, 'logo3x')->widget(FileInput::className(), [
         'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
-            'maxImageHeight' => ($isQR ? 110 : 123),
-            'maxImageWidth' => 312,
-        ])
+            'maxImageWidth' => 480,
+            'maxImageHeight' => 150,
+            'initialPreview' => $model->getHtmlImage('logo3x'),
+        ]),
     ])?>
 
-    <?php if ($file = $model->stripImageRetinaFile) {
-        $filePluginOptions['initialPreview'] =  Html::img($file->getUrlPath());
-    } else {
-        $filePluginOptions['initialPreview'] = false;
-    }?>
-    <?= $form->field($model, 'strip_image_retina')->widget(FileInput::className(), [
+    <?php #strip?>
+    <?= $form->field($model, 'strip')->widget(FileInput::className(), [
         'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
-            'maxImageHeight' => ($isQR ? 220 : 246),
-            'maxImageWidth' => 624,
-        ])
+            'maxImageWidth' => 320,
+            'maxImageHeight' => $isQR ? 110 : 123,
+            'initialPreview' => $model->getHtmlImage('strip'),
+        ]),
+    ])?>
+    <?= $form->field($model, 'strip2x')->widget(FileInput::className(), [
+        'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
+            'maxImageWidth' => 640,
+            'maxImageHeight' => $isQR ? 220 : 246,
+            'initialPreview' => $model->getHtmlImage('strip2x'),
+        ]),
+    ])?>
+    <?= $form->field($model, 'strip3x')->widget(FileInput::className(), [
+        'pluginOptions' => ArrayHelper::merge($filePluginOptions, [
+            'maxImageWidth' => 1125,
+            'maxImageHeight' => 432,
+            'initialPreview' => $model->getHtmlImage('strip3x'),
+        ]),
     ])?>
 
-    <?= $form->field($model, 'active')->checkbox(['label' => 'Активен'])->label(false) ?>
 
     <div class="form-group">
         <?= Html::submitButton(
@@ -188,38 +204,6 @@ $(document).ready(function() {
             $('.field-coupontemplate-barcode_message_encoding').show();
         }
     });
-
-    $('#coupontemplate-barcode_format').on('change', function(){
-        if (this.value == 'PKBarcodeFormatPDF417') {
-            setStripSize(false);
-        } else {
-            setStripSize(true);
-        }
-    });
-
-    function setStripSize(withQR){
-        var stripImageInput = $('#coupontemplate-strip_image');
-        var stripImageRetinaInput = $('#coupontemplate-strip_image_retina');
-
-        var stripImageElem = stripImageInput.attr('data-krajee-fileinput');
-        console.log(stripImageElem);
-        var stripImageRetinaElem = stripImageRetinaInput.attr('data-krajee-fileinput');
-
-        if (withQR) {
-            setSize(stripImageElem, 312, 110);
-            setSize(stripImageRetinaElem, 624, 220);
-        } else {
-            setSize(stripImageElem, 312, 123);
-            setSize(stripImageRetinaElem, 624, 246);
-        }
-    }
-
-    function setSize(elem, width, height) {
-        if (elem.length) {
-            elem.maxImageHeight = width;
-            elem.maxImageWidth = height;
-        }
-    }
 });
 JS;
 $this->registerJs($script);

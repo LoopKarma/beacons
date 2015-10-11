@@ -1,12 +1,12 @@
 <?php
 namespace app\controllers;
 
+use app\models\Pos;
 use app\models\search\TemplateSearch;
 use Yii;
 use app\models\TemplatePos;
 use app\models\TemplateFile;
 use app\models\CouponTemplate;
-use app\models\search\CouponSearch;
 use yii\db\ActiveRecord;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -22,7 +22,7 @@ class TemplateController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                        'actions' => ['index', 'view', 'create', 'update', 'delete', 'get-merchant-pos'],
                         'allow' => true,
                         'roles' => [\app\models\User::ROLE_ADMIN],
                     ],
@@ -73,7 +73,7 @@ class TemplateController extends Controller
     {
         $model = new CouponTemplate(['scenario' => 'create']);
         $post = Yii::$app->request->post();
-        if ($post && $model->load($post)) {
+        if ($post && $model->load($post) && $this->checkPos($model, $post)) {
             $this->uploadFiles($model);
             if ($model->save()) {
                 if (isset($post['pos'])) {
@@ -97,7 +97,10 @@ class TemplateController extends Controller
     {
         $model = $this->findModel($id);
         $post = Yii::$app->request->post();
-        if ($post && $model->load($post)) {
+        if (isset($post['pos'])) {
+            $this->checkPos($model, $post);
+        }
+        if ($post && $model->load($post) && !$model->hasErrors()) {
             $this->uploadFiles($model);
             if ($model->save()) {
                 if (isset($post['pos'])) {
@@ -144,30 +147,33 @@ class TemplateController extends Controller
 
     protected function uploadFiles(ActiveRecord $model)
     {
-        $icon = TemplateFile::uploadFile($model, 'icon');
-        if ($icon) {
-            $model->icon = $icon->file_id;
+        $model->icon = TemplateFile::uploadFile($model, 'icon')->file_id ?: $model->icon;
+        $model->icon2x = TemplateFile::uploadFile($model, 'icon2x')->file_id ?: $model->icon2x;
+        $model->icon3x = TemplateFile::uploadFile($model, 'icon3x')->file_id ?: $model->icon3x;
+
+        $model->logo = TemplateFile::uploadFile($model, 'logo')->file_id ?: $model->logo;
+        $model->logo2x = TemplateFile::uploadFile($model, 'logo2x')->file_id ?: $model->logo2x;
+        $model->logo3x = TemplateFile::uploadFile($model, 'logo3x')->file_id ?: $model->logo3x;
+
+        $model->strip = TemplateFile::uploadFile($model, 'strip')->file_id ?: $model->strip;
+        $model->strip2x = TemplateFile::uploadFile($model, 'strip2x')->file_id ?: $model->strip2x;
+        $model->strip3x = TemplateFile::uploadFile($model, 'strip3x')->file_id ?: $model->strip3x;
+    }
+
+    public function actionGetMerchantPos($merchantId)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (Yii::$app->request->isAjax && $merchantId) {
+            $items = Pos::find()
+                ->select('pos_id as id, address as text')
+                ->where(['merchant_id' => $merchantId])
+                ->asArray()
+                ->all();
+
+            $out['results'] = array_values($items);
         }
-        $iconRetina = TemplateFile::uploadFile($model, 'icon_retina');
-        if ($iconRetina) {
-            $model->icon_retina = $iconRetina->file_id;
-        }
-        $logo = TemplateFile::uploadFile($model, 'logo');
-        if ($logo) {
-            $model->logo = $logo->file_id;
-        }
-        $logoRetina = TemplateFile::uploadFile($model, 'logo_retina');
-        if ($logoRetina) {
-            $model->logo_retina = $logoRetina->file_id;
-        }
-        $stripImage = TemplateFile::uploadFile($model, 'strip_image');
-        if ($stripImage) {
-            $model->strip_image = $stripImage->file_id;
-        }
-        $stripImageRetina = TemplateFile::uploadFile($model, 'strip_image_retina');
-        if ($stripImageRetina) {
-            $model->strip_image_retina = $stripImageRetina->file_id;
-        }
+        return $out;
     }
 
     protected function updatePos(ActiveRecord $model, $post)
@@ -179,5 +185,34 @@ class TemplateController extends Controller
             $posTemplate->pos_id = $pos;
             $posTemplate->save();
         }
+    }
+
+    protected function checkPos(ActiveRecord $model, $post)
+    {
+        if ($post['pos']) {
+            $groups = Pos::find()
+                ->select('merchant_id')
+                ->where(['pos_id' => $post['pos']])
+                ->groupBy('merchant_id')
+                ->asArray()
+                ->all();
+
+            $posMerchant = $groups[key($groups)]['merchant_id'];
+            if (count($groups) != 1) {
+                $model->addError(
+                    'merchant_id',
+                    'Выбранные точки продаж относятся к разным мерчантам. Проверьте точки продаж'
+                );
+                return false;
+            } elseif ($posMerchant != $post['CouponTemplate']['merchant_id']) {
+                $model->addError(
+                    'merchant_id',
+                    'Выбранные точки продаж не принадлежат выбранному мерчанту'
+                );
+                return false;
+            }
+        }
+        return true;
+
     }
 }

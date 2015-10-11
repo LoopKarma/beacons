@@ -4,10 +4,12 @@ namespace app\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\Html;
 
 /**
  *
  * @property integer $template_id
+ * @property string $name
  * @property integer $active
  * @property string $create_date
  * @property string $update_date
@@ -22,15 +24,18 @@ use yii\behaviors\TimestampBehavior;
  * @property string $without_barcode
  * @property string $barcode_format
  * @property string $barcode_message_encoding
+ * @property string $send_unlimited
  * @property string $icon
- * @property string $icon_retina
+ * @property string $icon2x
+ * @property string $icon3x
  * @property string $logo
- * @property string $logo_retina
- * @property string $strip_image
- * @property string $strip_image_retina
+ * @property string $logo2x
+ * @property string $logo3x
+ * @property string $strip
+ * @property string $strip2x
+ * @property string $strip3x
  * @property string $foreground_color
  * @property string $background_color
- *
  */
 class CouponTemplate extends \yii\db\ActiveRecord
 {
@@ -61,19 +66,22 @@ class CouponTemplate extends \yii\db\ActiveRecord
                 [
                     'active',
                     'merchant_id',
+                    'send_unlimited',
                 ],
                 'integer'
             ],
-            [['merchant_id', 'coupon'], 'required'],
-            [['icon', 'logo', 'strip_image'], 'required', 'on' => 'create'],
+            [['merchant_id', 'coupon', 'name'], 'required'],
+            [['icon', 'logo', 'strip'], 'required', 'on' => 'create'],
             [['coupon'], 'string'],
             [
                 ['organization_name', 'team_identifier', 'logo_text', 'description', 'beacon_relevant_text'],
                 'string',
                 'max' => 256
             ],
+            [['name'], 'string', 'max' => 50],
             [['barcode_format', 'barcode_message_encoding'], 'string', 'max' => 100],
             [['foreground_color', 'background_color'], 'string', 'max' => 16, 'min' => 10],
+            [['send_unlimited', 'active'], 'in', 'range' => [0, 1]],
             [
                 ['foreground_color', 'background_color'],
                 'match',
@@ -82,11 +90,13 @@ class CouponTemplate extends \yii\db\ActiveRecord
             ],
             [['coupon'], 'validateKeys'],
             [['coupon'], 'validateIsJsonValid'],
+            //[['active'], 'default', 'value' => 1],
             [['organization_name'], 'default', 'value' => static::DEF_ORGANIZATION_NAME],
             [['team_identifier'], 'default', 'value' => static::DEF_TEAM_IDENTIFIER],
             [['beacon_relevant_text'], 'default', 'value' => static::DEF_BEACON_REALEVANT_TEXT],
             [['barcode_format'], 'in', 'range' => static::BARCODE_FORMAT],
             [['barcode_message_encoding'], 'default', 'value' => static::DEF_BARCODE_MESSAGE_ENCODING],
+            [['without_barcode'], 'safe']
         ];
     }
 
@@ -98,6 +108,7 @@ class CouponTemplate extends \yii\db\ActiveRecord
     {
         return [
             'template_id' => 'ID Шаблона',
+            'name' => 'Название шаблона',
             'active' => 'Активность',
             'merchant_id' => 'Мерчант',
             'create_date' => 'Дата создания',
@@ -113,12 +124,17 @@ class CouponTemplate extends \yii\db\ActiveRecord
             'without_barcode' => 'Без barcode',
             'barcode_format' => 'Barcode Format',
             'barcode_message_encoding' => 'Barcode Message Encoding',
-            'icon' => 'Изображение Icon',
-            'icon_retina' => 'Изображение Icon Retina',
-            'logo' => 'Изображение Logo',
-            'logo_retina' => 'Изображение Logo Retina',
-            'strip_image' => 'Изображение Strip',
-            'strip_image_retina' => 'Изображение Strip Retina',
+            'send_unlimited' => 'Неограниченное количество купонов',
+            //images
+            'icon' => 'Icon',
+            'icon2x' => 'Icon@2x',
+            'icon3x' => 'Icon@3x',
+            'logo' => 'Logo',
+            'logo2x' => 'Logo@2x',
+            'logo3x' => 'Logo@3x',
+            'strip' => 'Strip',
+            'strip2x' => 'Strip2x',
+            'strip3x' => 'Strip3x',
         ];
     }
 
@@ -139,6 +155,9 @@ class CouponTemplate extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * @param $attribute
+     */
     public function validateIsJsonValid($attribute)
     {
         $json = '{' . $this->{$attribute} . '}';
@@ -147,6 +166,9 @@ class CouponTemplate extends \yii\db\ActiveRecord
         }
     }
 
+    /**
+     * @param $attribute
+     */
     public function validateKeys($attribute)
     {
         foreach (static::COUPON_JSON_KEYS as $key) {
@@ -156,6 +178,9 @@ class CouponTemplate extends \yii\db\ActiveRecord
         }
     }
 
+    /**
+     * @return bool
+     */
     public function beforeValidate()
     {
         if (mb_substr($this->coupon, -1) == ',') {
@@ -164,6 +189,9 @@ class CouponTemplate extends \yii\db\ActiveRecord
         return true;
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getTemplatePos()
     {
         return $this->hasMany(TemplatePos::className(), ['template_id' => 'template_id']);
@@ -187,66 +215,72 @@ class CouponTemplate extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @param $attribute_name
+     * @return array|bool|null|\app\models\TemplateFile
      */
-    public function getIconFile()
+    public function getFile($attribute_name)
     {
-        return $this->hasOne(TemplateFile::className(), ['file_id' => 'icon']);
+        if (in_array($attribute_name, $this->attributes()) && $this->$attribute_name) {
+            return $this->hasOne(TemplateFile::className(), ['file_id' => $attribute_name])->one();
+        }
+        return false;
+    }
+
+    public function getFilePath($attribute_name)
+    {
+        /** @var \app\models\TemplateFile $file */
+        if ($file = $this->getFile($attribute_name)) {
+            $path = $file->getPath();
+            return $path;
+        }
+        return false;
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @param $attribute_name
+     * @return bool|string
      */
-    public function getIconRetinaFile()
+    public function getFileUrlPath($attribute_name)
     {
-        return $this->hasOne(TemplateFile::className(), ['file_id' => 'icon_retina']);
+        /** @var \app\models\TemplateFile $file */
+        if ($file = $this->getFile($attribute_name)) {
+            return $file->getUrlPath();
+        }
+        return false;
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @param $attribute_name
+     * @param bool|false $options
+     * @return bool|string
      */
-    public function getLogoFile()
+    public function getHtmlImage($attribute_name, $options = false)
     {
-        return $this->hasOne(TemplateFile::className(), ['file_id' => 'logo']);
+        if ($path = $this->getFileUrlPath($attribute_name)) {
+            return Html::img($path, $options);
+        }
+        return false;
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @param bool|false $attribute_name
+     * @return array
      */
-    public function getLogoRetinaFile()
+    public function getPoses($attribute_name = false)
     {
-        return $this->hasOne(TemplateFile::className(), ['file_id' => 'logo_retina']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getStripImageFile()
-    {
-        return $this->hasOne(TemplateFile::className(), ['file_id' => 'strip_image']);
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getStripImageRetinaFile()
-    {
-        return $this->hasOne(TemplateFile::className(), ['file_id' => 'strip_image_retina']);
-    }
-
-    public function getPoses($attr = false)
-    {
-        $list = [];
         $poses = $this->pos;
-        if (is_array($poses)) {
+        if (!empty($poses)) {
             foreach ($poses as $pos) {
-                if ($attr) {
-                    $list[] = $pos->{$attr};
+                if ($attribute_name) {
+                    $list[$pos->primaryKey] = $pos->{$attribute_name};
                 } else {
                     $list[] = $pos->primaryKey;
                 }
             }
+        } else {
+            $list = [];
         }
+
         return $list;
     }
 }
