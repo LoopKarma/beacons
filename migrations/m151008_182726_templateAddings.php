@@ -13,7 +13,7 @@ class m151008_182726_templateAddings extends Migration
         $this->addColumn(
             $this->tableName,
             'send_unlimited',
-        $this->smallInteger(1)->defaultValue(0) . ' AFTER barcode_message_encoding'
+            $this->smallInteger(1)->defaultValue(0) . ' AFTER barcode_message_encoding'
         );
 
         $this->addColumn(
