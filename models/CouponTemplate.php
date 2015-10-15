@@ -25,6 +25,7 @@ use yii\helpers\Html;
  * @property string $barcode_format
  * @property string $barcode_message_encoding
  * @property string $send_unlimited
+ * @property string $send_scenario
  * @property string $icon
  * @property string $icon2x
  * @property string $icon3x
@@ -42,11 +43,19 @@ class CouponTemplate extends \yii\db\ActiveRecord
     const DEF_ORGANIZATION_NAME = 'GetCoupon';
     const DEF_TEAM_IDENTIFIER = '8V4MJ9GE5G';
     const DEF_BEACON_REALEVANT_TEXT = 'Воспользуйтесь купоном!';
-    const BARCODE_FORMAT = ['PKBarcodeFormatPDF417', 'PKBarcodeFormatQR'];
+    const BARCODE_FORMAT = [
+        'PKBarcodeFormatPDF417',
+        'PKBarcodeFormatQR',
+        'PKBarcodeFormatAztec',
+        'PKBarcodeFormatCode128',
+    ];
     const DEF_BARCODE_MESSAGE_ENCODING = 'iso-8859-1';
     const COUPON_JSON_KEYS = [
         'coupon', 'headerFields', 'primaryFields', 'secondaryFields', 'auxiliaryFields', 'backFields'
     ];
+
+    const SEND_ON_ENTER = 1;
+    const SEND_ON_LEAVING = 2;
 
     /**
      * @inheritdoc
@@ -67,6 +76,7 @@ class CouponTemplate extends \yii\db\ActiveRecord
                     'active',
                     'merchant_id',
                     'send_unlimited',
+                    'send_scenario',
                 ],
                 'integer'
             ],
@@ -90,7 +100,6 @@ class CouponTemplate extends \yii\db\ActiveRecord
             ],
             [['coupon'], 'validateKeys'],
             [['coupon'], 'validateIsJsonValid'],
-            //[['active'], 'default', 'value' => 1],
             [['organization_name'], 'default', 'value' => static::DEF_ORGANIZATION_NAME],
             [['team_identifier'], 'default', 'value' => static::DEF_TEAM_IDENTIFIER],
             [['beacon_relevant_text'], 'default', 'value' => static::DEF_BEACON_REALEVANT_TEXT],
@@ -125,6 +134,7 @@ class CouponTemplate extends \yii\db\ActiveRecord
             'barcode_format' => 'Barcode Format',
             'barcode_message_encoding' => 'Barcode Message Encoding',
             'send_unlimited' => 'Неограниченное количество купонов',
+            'send_scenario' => 'Когда отправлять купон',
             //images
             'icon' => 'Icon',
             'icon2x' => 'Icon@2x',
@@ -276,11 +286,9 @@ class CouponTemplate extends \yii\db\ActiveRecord
                 } else {
                     $list[] = $pos->primaryKey;
                 }
+                return $list;
             }
-        } else {
-            $list = [];
         }
-
-        return $list;
+        return $list = [];
     }
 }

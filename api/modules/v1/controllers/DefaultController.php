@@ -38,4 +38,15 @@ class DefaultController extends Controller
         $error = (string)reset($errors);
         throw new NotFoundHttpException($error);
     }
+
+    public function actionCheck()
+    {
+        $model = new CouponGenerator();
+        if ($model->load(Yii::$app->request->get(), '') && $model->validate()) {
+            return $model->getTemplateSendScenario();
+        }
+        $errors = $model->firstErrors;
+        $error = (string)reset($errors);
+        throw new NotFoundHttpException($error);
+    }
 }

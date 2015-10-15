@@ -147,17 +147,14 @@ class TemplateController extends Controller
 
     protected function uploadFiles(ActiveRecord $model)
     {
-        $model->icon = TemplateFile::uploadFile($model, 'icon')->file_id ?: $model->icon;
-        $model->icon2x = TemplateFile::uploadFile($model, 'icon2x')->file_id ?: $model->icon2x;
-        $model->icon3x = TemplateFile::uploadFile($model, 'icon3x')->file_id ?: $model->icon3x;
-
-        $model->logo = TemplateFile::uploadFile($model, 'logo')->file_id ?: $model->logo;
-        $model->logo2x = TemplateFile::uploadFile($model, 'logo2x')->file_id ?: $model->logo2x;
-        $model->logo3x = TemplateFile::uploadFile($model, 'logo3x')->file_id ?: $model->logo3x;
-
-        $model->strip = TemplateFile::uploadFile($model, 'strip')->file_id ?: $model->strip;
-        $model->strip2x = TemplateFile::uploadFile($model, 'strip2x')->file_id ?: $model->strip2x;
-        $model->strip3x = TemplateFile::uploadFile($model, 'strip3x')->file_id ?: $model->strip3x;
+        $attributes = ['icon', 'icon2x', 'icon3x', 'logo', 'logo2x', 'logo3x', 'strip', 'strip2x', 'strip3x'];
+        foreach ($attributes as $attribute) {
+            /** @var \app\models\TemplateFile $file */
+            $file = TemplateFile::uploadFile($model, $attribute);
+            if ($file) {
+                $model->{$attribute} = $file->file_id;
+            }
+        }
     }
 
     public function actionGetMerchantPos($merchantId)

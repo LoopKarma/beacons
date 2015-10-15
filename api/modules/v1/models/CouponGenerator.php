@@ -1,7 +1,6 @@
 <?php
 namespace app\api\modules\v1\models;
 
-use app\models\BarcodeMessage;
 use Yii;
 use yii\base\Model;
 use app\models\Pos;
@@ -9,6 +8,7 @@ use app\models\Merchant;
 use app\models\Coupon;
 use yii\db\ActiveRecord;
 use app\models\CouponTemplate;
+use app\models\BarcodeMessage;
 
 class CouponGenerator extends Model
 {
@@ -83,7 +83,7 @@ class CouponGenerator extends Model
 
     public function validateIfCouponAlreadyExist()
     {
-        if (!$this->template->send_unlimited) {
+        if (isset($this->template) && !$this->template->send_unlimited && !$this->hasErrors()) {
             $coupon = Coupon::find()->where([
                 'client' => $this->client,
                 'merchant_id' => $this->merchant->primaryKey,
@@ -116,6 +116,23 @@ class CouponGenerator extends Model
         return false;
     }
 
+    public function getTemplateSendScenario()
+    {
+        /** @var \app\models\CouponTemplate $sendScenario */
+        $sendScenario = $this->template->send_scenario;
+        if ($sendScenario == CouponTemplate::SEND_ON_ENTER) {
+            return [
+                'scenario' => CouponTemplate::SEND_ON_ENTER,
+                'send' => 'on enter',
+            ];
+        } else {
+            return [
+                'scenario' => CouponTemplate::SEND_ON_LEAVING,
+                'send' => 'on leave',
+            ];
+        }
+    }
+
     public function getBarcodeMessage()
     {
         $message = $this->findMessage();
@@ -124,22 +141,6 @@ class CouponGenerator extends Model
         }
         return $message;
     }
-
-    private function findMessage()
-    {
-        $message = BarcodeMessage::find()
-            ->select('message')
-            ->where([
-                'merchant_id' => $this->merchant->primaryKey,
-                'utilize' => null
-            ])
-            ->orderBy(['create_date' => SORT_ASC])
-            ->one();
-
-        return $message;
-    }
-
-
 
     public function createCouponRecord($serialNumber)
     {
@@ -156,5 +157,19 @@ class CouponGenerator extends Model
             'serial_number' => $serialNumber,
         ]);
         $coupon->save(false);
+    }
+
+    private function findMessage()
+    {
+        $message = BarcodeMessage::find()
+            ->select('message')
+            ->where([
+                'merchant_id' => $this->merchant->primaryKey,
+                'utilize' => null
+            ])
+            ->orderBy(['create_date' => SORT_ASC])
+            ->one();
+
+        return $message;
     }
 }

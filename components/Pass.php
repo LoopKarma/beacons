@@ -2,14 +2,15 @@
 namespace app\components;
 
 use Yii;
-use yii\base\component;
 use PKPass\PKPass;
-use yii\db\ActiveRecord;
 use yii\helpers\Json;
+use yii\base\component;
+use app\models\CouponTemplate;
 use app\api\modules\v1\models\CouponGenerator;
 
 class Pass extends Component
 {
+    const LOG_CATEGORY = 'pass_generator';
     public $passFilePath;
     public $wwdrCertPath;
     public $teamIdentifier;
@@ -27,7 +28,7 @@ class Pass extends Component
         $p12CertFile = $model->merchant->certFile;
         $certPath = $p12CertFile->getPath() ?: false;
         if (!$certPath) {
-            Yii::error('Merchant has no cert file. ID = '.$model->merchant->primaryKey);
+            Yii::error('Merchant has no cert file. ID = '.$model->merchant->primaryKey, static::LOG_CATEGORY);
             return false;
         }
         $pkPass->setCertificate($certPath);
@@ -44,16 +45,13 @@ class Pass extends Component
         ];
         $styleKeys = json_decode('{'. $model->template->coupon . '}', true);
         if (!$styleKeys) {
-            Yii::error('template->coupon is broken. Template ID = '.$model->template->primaryKey);
+            Yii::error('template->coupon is broken. Template ID = '.$model->template->primaryKey, static::LOG_CATEGORY);
             return false;
         }
         $associatedAppKeys    = [];
         $relevanceKeys        = [];
         if ($model->template->without_barcode) {
             $visualAppearanceKeys = [
-                'barcode'         => [
-                    'altText' => ''
-                ],
                 'foregroundColor' => $model->template->foreground_color,
                 'backgroundColor' => $model->template->background_color,
                 'logoText'        => $model->template->logo_text,
@@ -64,6 +62,13 @@ class Pass extends Component
                     'format'          => $model->template->barcode_format,
                     'message'         => mb_strtoupper($model->message),
                     'messageEncoding' => $model->template->barcode_message_encoding
+                ],
+                'barcodes'         => [
+                    [
+                        'format'          => $model->template->barcode_format,
+                        'message'         => mb_strtoupper($model->message),
+                        'messageEncoding' => $model->template->barcode_message_encoding
+                    ]
                 ],
                 'foregroundColor' => $model->template->foreground_color,
                 'backgroundColor' => $model->template->background_color,
@@ -81,9 +86,9 @@ class Pass extends Component
         );
         $pkPass->setJson(Json::encode($passData));
         $this->addPossibleImages($pkPass, $model->template);
-        $filePath = $this->getPassFilePath().mktime().'.pkpass';
+        $filePath = $this->getPassFilePath().time().'.pkpass';
         if (!$res = $pkPass->create(false)) {
-            Yii::error('Error: '.$pkPass->getError());
+            Yii::error($pkPass->getError(), static::LOG_CATEGORY);
             return false;
         } else {
             if (file_put_contents($filePath, $res)) {
@@ -97,8 +102,9 @@ class Pass extends Component
      * @param PKPass $pkPass
      * @param \app\models\CouponTemplate $template
      */
-    protected function addPossibleImages(PKPass &$pkPass, ActiveRecord $template)
+    protected function addPossibleImages(PKPass &$pkPass, CouponTemplate $template)
     {
+        //VarDumper::dump($template, 10, 1); die();
         $pkPass->addFile($template->getFilePath('icon'), 'icon.png');
         $pkPass->addFile($template->getFilePath('icon2x'), 'icon@2x.png');
         $pkPass->addFile($template->getFilePath('icon3x'), 'icon@3x.png');

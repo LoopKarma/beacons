@@ -23,7 +23,8 @@ $config = [
             'enableStrictParsing' => true,
             'showScriptName' => false,
             'rules' => [
-                'v1/coup'       => 'v1/default/index',
+                'v1/coup' => 'v1/default/index',
+                'v1/check' => 'v1/default/check',
             ],
         ],
         'response' => [

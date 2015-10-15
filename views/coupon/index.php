@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use kartik\date\DatePicker;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\search\CouponSearch */
@@ -20,7 +21,19 @@ $isMerchant = isset(Yii::$app->user->identity->merchant_id);
         'filterModel' => $searchModel,
         'columns' => [
             'coupon_id',
-            'create_date',
+            [
+                'attribute' => 'create_date',
+                'filter' => DatePicker::widget([
+                    'model'=>$searchModel,
+                    'attribute'=>'create_date',
+                    'language' => 'ru',
+                    'type' => DatePicker::TYPE_INPUT,
+                    'pluginOptions' => [
+                        'autoclose'=>true,
+                        'format' => 'yyyy-mm-dd'
+                    ],
+                ])
+            ],
             [
                 'attribute' => 'merchant_id',
                 'format' => 'html',
@@ -67,11 +80,8 @@ $isMerchant = isset(Yii::$app->user->identity->merchant_id);
             ],
             [
                 'label' => 'Адрес точки продаж',
-                'format' => 'html',
-                'value' => function ($model) {
-                    return $model->pos->address;
-                },
-                'visible' => $isMerchant,
+                'attribute' => 'address',
+                'value' => 'pos.address',
             ],
             'client',
             'message',

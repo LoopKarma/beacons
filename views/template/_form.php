@@ -26,9 +26,15 @@ $posInitText = !$model->isNewRecord ? $model->getPoses('address') : null;
     ]); ?>
 
     <?php $model->isNewRecord ? $model->active = 1 : null; ?>
+
     <?= $form->field($model, 'active')->checkbox()?>
 
     <?= $form->field($model, 'send_unlimited')->checkbox()?>
+
+    <?= $form->field($model, 'send_scenario')->dropDownList([
+        $model::SEND_ON_ENTER => 'На входе',
+        $model::SEND_ON_LEAVING => 'На выходе',
+    ])?>
 
     <?= $form->field($model, 'merchant_id')->dropDownList(\app\models\Merchant::getMerchantList()) ?>
 

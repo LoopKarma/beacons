@@ -40,6 +40,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => $model->send_unlimited ? 'Да' : 'Нет',
             ],
             [
+                'attribute' => 'send_scenario',
+                'value' => $model->send_unlimited == $model::SEND_ON_ENTER ? 'На входе' : 'На выходе',
+            ],
+            [
                 'attribute' => 'merchant_id',
                 'value' => "{$model->merchant->name} [{$model->merchant->merchant_id}]",
             ],
@@ -73,6 +77,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'barcode_message_encoding',
                 'visible' => !$model->without_barcode,
             ],
+            'background_color',
+            'foreground_color',
             [
                 'attribute' => 'icon',
                 'format' => 'raw',

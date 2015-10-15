@@ -54,7 +54,7 @@ class Coupon extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'coupon_id' => 'ID купона',
+            'coupon_id' => 'ID',
             'create_date' => 'Дата генерации',
             'template_id' => 'ID шаблона',
             'merchant_id' => 'Мерчант',
@@ -63,8 +63,8 @@ class Coupon extends \yii\db\ActiveRecord
             'confirmed' => 'Подтверждено',
             'message' => 'Сообщение',
             'uuid' => 'Uuid',
-            'major' => 'Major',
-            'minor' => 'Minor',
+            'major' => '* Major *',
+            'minor' => '* Minor *',
             'serial_number' => 'Серийный номер',
         ];
     }
