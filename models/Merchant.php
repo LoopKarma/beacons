@@ -103,14 +103,14 @@ class Merchant extends \yii\db\ActiveRecord
      */
     public static function getMerchantList()
     {
-        $list = ['' => '(нет значения)'];
-        $items = Yii::$app->cache->get(static::CACHE_KEY);
-        if ($items) {
+        $list = Yii::$app->cache->get(static::CACHE_KEY);
+        if (!$list) {
+            $list = ['' => '(нет значения)'];
             $items = self::find()->select(['merchant_id', 'name'])->asArray()->all();
             foreach ($items as $item) {
                 $list[$item['merchant_id']] = $item['name'];
             }
-            Yii::$app->cache->set(static::CACHE_KEY, $items, static::CACHE_TIMEOUT);
+            Yii::$app->cache->set(static::CACHE_KEY, $list, static::CACHE_TIMEOUT);
         }
 
         return $list;
