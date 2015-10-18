@@ -18,6 +18,10 @@ $isMerchant = isset(Yii::$app->user->identity->merchant_id);
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
+            [
+                'attribute' => 'confirmed',
+                'value' => $model->confirmed ? 'Да' : 'Нет',
+            ],
             'coupon_id',
             'create_date',
             'serial_number',

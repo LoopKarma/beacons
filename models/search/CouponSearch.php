@@ -4,8 +4,8 @@ namespace app\models\search;
 
 use Yii;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
 use app\models\Coupon;
+use yii\data\ActiveDataProvider;
 
 /**
  * CouponSearch represents the model behind the search form about `app\models\Coupon`.
@@ -13,6 +13,7 @@ use app\models\Coupon;
 class CouponSearch extends Coupon
 {
     public $address;
+    public $templateName;
     public $merchant_id;
     /**
      * @inheritdoc
@@ -21,7 +22,20 @@ class CouponSearch extends Coupon
     {
         return [
             [['coupon_id', 'template_id', 'merchant_id', 'pos_id', 'confirmed'], 'integer'],
-            [['create_date', 'client', 'message', 'uuid', 'major', 'minor', 'serial_number', 'address'], 'safe'],
+            [
+                [
+                    'create_date',
+                    'client',
+                    'message',
+                    'uuid',
+                    'major',
+                    'minor',
+                    'serial_number',
+                    'address',
+                    'templateName'
+                ],
+                'safe'
+            ],
         ];
     }
 
@@ -44,8 +58,7 @@ class CouponSearch extends Coupon
     public function search($params)
     {
         $query = Coupon::find();
-
-        $query->joinWith(['pos']);
+        $query->joinWith(['pos', 'merchant', 'template']);
         if ($this->merchant_id) {
             $query->where(['{{%coupon}}.merchant_id' => $this->merchant_id]);
         }
@@ -53,14 +66,19 @@ class CouponSearch extends Coupon
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => 20,
+                'pageSize' => 10,
             ],
+            'sort'=> ['defaultOrder' => ['coupon_id' => SORT_DESC]]
         ]);
 
 
         $dataProvider->sort->attributes['address'] = [
             'asc' => ['{{%pos}}.address' => SORT_ASC],
             'desc' => ['{{%pos}}.address' => SORT_DESC],
+        ];
+        $dataProvider->sort->attributes['templateName'] = [
+            'asc' => ['{{%coupon_template}}.name' => SORT_ASC],
+            'desc' => ['{{%coupon_template}}.name' => SORT_DESC],
         ];
 
         if ($this->load($params) && !$this->validate()) {
@@ -84,8 +102,8 @@ class CouponSearch extends Coupon
             ->andFilterWhere(['like', 'major', $this->major])
             ->andFilterWhere(['like', '{{%coupon}}.minor', $this->minor])
             ->andFilterWhere(['like', '{{%pos}}.address', $this->address])
-            ->andFilterWhere(['like', 'serial_number', $this->serial_number]);
-
+            ->andFilterWhere(['like', 'serial_number', $this->serial_number])
+            ->andFilterWhere(['like', '{{%coupon_template}}.name', $this->templateName]);
 
         return $dataProvider;
     }

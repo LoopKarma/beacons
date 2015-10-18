@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'send_scenario',
-                'value' => $model->send_unlimited == $model::SEND_ON_ENTER ? 'На входе' : 'На выходе',
+                'value' => $model->send_scenario == $model::SEND_ON_ENTER ? 'На входе' : 'На выходе',
             ],
             [
                 'attribute' => 'merchant_id',

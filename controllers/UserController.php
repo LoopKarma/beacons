@@ -3,11 +3,11 @@
 namespace app\controllers;
 
 use Yii;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use app\models\LoginForm;
-use yii\filters\VerbFilter;
 use app\models\User;
+use yii\web\Controller;
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use app\models\forms\LoginForm;
 use app\models\search\UserSearch;
 use yii\web\NotFoundHttpException;
 
@@ -46,7 +46,7 @@ class UserController extends Controller
         ];
     }
 
-    /** ����������� ������������
+    /**
      * @return string|\yii\web\Response
      */
     public function actionLogin()
@@ -61,7 +61,7 @@ class UserController extends Controller
         }
     }
 
-    /** ����� ������������
+    /**
      * @return string|\yii\web\Response
      */
     public function actionLogout()

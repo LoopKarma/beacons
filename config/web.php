@@ -18,7 +18,6 @@ $config = [
             'enablePrettyUrl' => true,
         ],
         'request' => [
-            // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'qbyl9TQc_1Cqn9rdqntXefal0vpL-aNc',
         ],
         'cache' => [
@@ -72,12 +71,6 @@ if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
-        'allowedIPs' => ['192.168.56.1']
-    ];
-
-    $config['bootstrap'][] = 'gii';
-    $config['modules']['gii'] = [
-        'class' => 'yii\gii\Module',
         'allowedIPs' => ['192.168.56.1']
     ];
 }

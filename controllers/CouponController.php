@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\forms\CouponValidate;
 use Yii;
 use app\models\Coupon;
 use app\models\search\CouponSearch;
@@ -32,6 +33,15 @@ class CouponController extends Controller
                         'allow' => true,
                         'roles' => ['@'],
                     ],
+                    [
+                        'actions' => ['validate'],
+                        'allow' => true,
+                        'roles' => [\app\models\User::ROLE_MERCHANT],
+                    ],
+                    [
+                        'actions' => ['validate'],
+                        'allow' => false,
+                    ],
                 ],
             ],
             'verbs' => [
@@ -41,6 +51,23 @@ class CouponController extends Controller
                 ],
             ],
         ];
+    }
+
+    public function actionValidate()
+    {
+        $model = new CouponValidate();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if ($model->validateCoupon()) {
+                $message =  'Купон с серийным номером ' . $model->serialNumber . ' был подтвержден';
+                $type = 'success';
+            } else {
+                $message =  'Произошла ошибка при подтверждении купона';
+                $type = 'danger';
+            }
+            Yii::$app->session->setFlash($type, $message, false);
+        }
+
+        return $this->render('validate', ['model' => $model]);
     }
 
     /**

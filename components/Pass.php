@@ -11,6 +11,7 @@ use app\api\modules\v1\models\CouponGenerator;
 class Pass extends Component
 {
     const LOG_CATEGORY = 'pass_generator';
+    public $error;
     public $passFilePath;
     public $wwdrCertPath;
     public $teamIdentifier;
@@ -45,7 +46,8 @@ class Pass extends Component
         ];
         $styleKeys = json_decode('{'. $model->template->coupon . '}', true);
         if (!$styleKeys) {
-            Yii::error('template->coupon is broken. Template ID = '.$model->template->primaryKey, static::LOG_CATEGORY);
+            $this->error = 'Template coupon field is broken';
+            Yii::error($this->error . 'Template ID = '.$model->template->primaryKey, static::LOG_CATEGORY);
             return false;
         }
         $associatedAppKeys    = [];
@@ -60,13 +62,13 @@ class Pass extends Component
             $visualAppearanceKeys = [
                 'barcode'         => [
                     'format'          => $model->template->barcode_format,
-                    'message'         => mb_strtoupper($model->message),
+                    'message'         => mb_strtoupper($model->messageText),
                     'messageEncoding' => $model->template->barcode_message_encoding
                 ],
                 'barcodes'         => [
                     [
                         'format'          => $model->template->barcode_format,
-                        'message'         => mb_strtoupper($model->message),
+                        'message'         => mb_strtoupper($model->messageText),
                         'messageEncoding' => $model->template->barcode_message_encoding
                     ]
                 ],
@@ -88,7 +90,8 @@ class Pass extends Component
         $this->addPossibleImages($pkPass, $model->template);
         $filePath = $this->getPassFilePath().time().'.pkpass';
         if (!$res = $pkPass->create(false)) {
-            Yii::error($pkPass->getError(), static::LOG_CATEGORY);
+            $this->error = $pkPass->getError();
+            Yii::error($this->error, static::LOG_CATEGORY);
             return false;
         } else {
             if (file_put_contents($filePath, $res)) {

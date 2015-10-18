@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\helpers\RandomStringHelper;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\behaviors\TimestampBehavior;
@@ -26,6 +27,7 @@ use yii\validators\DateValidator;
  */
 class Coupon extends \yii\db\ActiveRecord
 {
+    const SERIAL_NUMBER_LENGTH = 8;
     /**
      * @inheritdoc
      */
@@ -44,6 +46,7 @@ class Coupon extends \yii\db\ActiveRecord
             [['template_id', 'merchant_id', 'pos_id', 'confirmed', 'message'], 'integer'],
             [['client', 'serial_number'], 'string', 'max' => 100],
             [['uuid', 'major', 'minor'], 'string', 'max' => 32],
+            [['serial_number'], 'string', 'max' => static::SERIAL_NUMBER_LENGTH],
             [['serial_number'], 'unique']
         ];
     }
@@ -108,6 +111,21 @@ class Coupon extends \yii\db\ActiveRecord
     public function getPos()
     {
         return $this->hasOne(Pos::className(), ['pos_id' => 'pos_id']);
+    }
+
+    public static function generateSerialNumber($merchantId)
+    {
+        $lastCoupon = Coupon::find()
+            ->select('coupon_id')
+            ->where(['merchant_id' => $merchantId])
+            ->orderBy(['coupon_id' => SORT_DESC])
+            ->asArray()
+            ->one();
+        $nextCouponId = $lastCoupon['coupon_id'] + 1;
+
+        $randomString = new RandomStringHelper(['alphabet' => '0123456789abc']);
+        return $randomString->generateString(static::SERIAL_NUMBER_LENGTH - strlen($nextCouponId)).$nextCouponId;
+
     }
 
     public function getCouponCount($fromDate, $toDate = false, $merchant = false)

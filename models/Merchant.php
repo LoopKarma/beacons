@@ -20,6 +20,9 @@ use yii\behaviors\TimestampBehavior;
  */
 class Merchant extends \yii\db\ActiveRecord
 {
+    const CACHE_KEY = 'merchant_list';
+    const CACHE_TIMEOUT = '3600';
+
     /**
      * @inheritdoc
      */
@@ -101,10 +104,15 @@ class Merchant extends \yii\db\ActiveRecord
     public static function getMerchantList()
     {
         $list = ['' => '(нет значения)'];
-        $items = self::find()->select(['merchant_id', 'name'])->asArray()->all();
-        foreach ($items as $item) {
-            $list[$item['merchant_id']] = $item['name'];
+        $items = Yii::$app->cache->get(static::CACHE_KEY);
+        if ($items) {
+            $items = self::find()->select(['merchant_id', 'name'])->asArray()->all();
+            foreach ($items as $item) {
+                $list[$item['merchant_id']] = $item['name'];
+            }
+            Yii::$app->cache->set(static::CACHE_KEY, $items, static::CACHE_TIMEOUT);
         }
+
         return $list;
     }
 }

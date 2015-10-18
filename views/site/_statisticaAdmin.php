@@ -2,34 +2,36 @@
 use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model \app\models\Coupon */
+$maxMerchantId = $model->getAttributeValueAmongAll('merchant_id', 'max');
+$maxPosId = $model->getAttributeValueAmongAll('pos_id', 'max');
+$maxTemplateId = $model->getAttributeValueAmongAll('template_id', 'max');
+
+$minMerchantId = $model->getAttributeValueAmongAll('merchant_id', 'min');
+$minPosId = $model->getAttributeValueAmongAll('pos_id', 'min');
+$minTemplateId = $model->getAttributeValueAmongAll('template_id', 'min');
 ?>
 
 <div class="col-lg-4">
     <h2>Больше всего купонов:</h2>
     <ul class="list-group">
-        <?php $maxMerchantId = $model->getAttributeValueAmongAll('merchant_id', 'max');?>
-        <?php if ($maxMerchantId):?>
+        <?php ?>
+        <?php if ($maxMerchantId && $maxMerchant = \app\models\Merchant::findOne($maxMerchantId)):?>
             <li class="list-group-item">
-                У мерчанта:
-                <?=Html::a(
-                    \app\models\Merchant::findOne($maxMerchantId)->name,
-                    ['/merchant/view', 'id' => $maxMerchantId]
-                )?>
+                У мерчанта: <?=Html::a($maxMerchant->name, ['/merchant/view', 'id' => $maxMerchantId])?>
             </li>
         <?php endif?>
-        <?php $maxPosId = $model->getAttributeValueAmongAll('pos_id', 'max');?>
-        <?php if ($maxPosId):?>
+        <?php ?>
+        <?php if ($maxPosId && $maxPos = \app\models\Pos::findOne($maxPosId)):?>
             <li class="list-group-item">
                 У точки продаж:
-                <?=Html::a(\app\models\Pos::findOne($maxPosId)->address, ['/pos/view', 'id' => $maxPosId])?>
+                <?=Html::a($maxPos->address, ['/pos/view', 'id' => $maxPosId])?>
             </li>
         <?php endif?>
-        <?php $maxTemplateId = $model->getAttributeValueAmongAll('template_id', 'max');?>
-        <?php if ($maxTemplateId):?>
+        <?php if ($maxTemplateId && $maxTemplate = \app\models\CouponTemplate::findOne($maxTemplateId)):?>
             <li class="list-group-item">
                 У шаблона:
                 <?=Html::a(
-                    \app\models\CouponTemplate::findOne($maxTemplateId)->name . ' [' . $maxTemplateId . ']',
+                    $maxTemplate->name . ' [' . $maxTemplateId . ']',
                     ['/template/view', 'id' => $maxTemplateId]
                 )?>
             </li>
@@ -39,29 +41,22 @@ use yii\helpers\Html;
 <div class="col-lg-4">
     <h2>Меньше всего купонов:</h2>
     <ul class="list-group">
-        <?php $minMerchantId = $model->getAttributeValueAmongAll('merchant_id', 'min');?>
-        <?php if ($minMerchantId):?>
+        <?php if ($minMerchantId && $minMerchant = \app\models\Merchant::findOne($minMerchantId)):?>
             <li class="list-group-item">
-                У мерчанта:
-                <?=Html::a(
-                    \app\models\Merchant::findOne($minMerchantId)->name,
-                    ['/merchant/view', 'id' => $minMerchantId]
-                )?>
+                У мерчанта: <?=Html::a($minMerchant->name, ['/merchant/view', 'id' => $minMerchantId])?>
             </li>
         <?php endif?>
-        <?php $minPosId = $model->getAttributeValueAmongAll('pos_id', 'min');?>
-        <?php if ($minPosId):?>
+
+        <?php if ($minPosId && $minPos = \app\models\Pos::findOne($minPosId)):?>
             <li class="list-group-item">
-                У точки продаж:
-                <?=Html::a(\app\models\Pos::findOne($minPosId)->address, ['/pos/view', 'id' => $minPosId])?>
+                У точки продаж: <?=Html::a($minPos->address, ['/pos/view', 'id' => $minPosId])?>
             </li>
         <?php endif?>
-        <?php $minTemplateId = $model->getAttributeValueAmongAll('template_id', 'min');?>
-        <?php if ($minTemplateId):?>
+        <?php if ($minTemplateId && $minTemplate = \app\models\CouponTemplate::findOne($minTemplateId)):?>
             <li class="list-group-item">
                 У шаблона:
                 <?=Html::a(
-                    \app\models\CouponTemplate::findOne($minTemplateId)->name . ' [' . $minTemplateId . ']',
+                    $minTemplate->name . ' [' . $minTemplateId . ']',
                     ['/template/view', 'id' => $minTemplateId]
                 )?>
             </li>

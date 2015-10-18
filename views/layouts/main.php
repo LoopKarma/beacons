@@ -28,7 +28,7 @@ AppAsset::register($this);
 <div class="wrap">
     <?php
     NavBar::begin([
-        'brandLabel' => 'iBeacon management',
+        'brandLabel' => Html::img('/files/logo_white.png', ['class' => 'nav-logo']),
         'brandUrl' => Yii::$app->homeUrl,
         'options' => [
             'class' => 'navbar-inverse navbar-fixed-top',
@@ -38,32 +38,40 @@ AppAsset::register($this);
     if (!Yii::$app->user->isGuest) {
         if (Yii::$app->user->can(\app\models\User::ROLE_ADMIN)) {
             $items = ArrayHelper::merge($items, [
-                ['label' => 'Пользователи', 'url' => ['/user/index']],
-                ['label' => 'Шаблоны', 'url' => ['/template/index']],
-                ['label' => 'Сгенерированные купоны', 'url' => ['/coupon/index']],
-                ['label' => 'Мерчанты', 'url' => ['/merchant/index']],
-                ['label' => 'Точки продаж', 'url' => ['/pos/index']],
+                ['label' => '<i class="glyphicon glyphicon-user"></i> Пользователи', 'url' => ['/user/index']],
+                ['label' => '<i class="glyphicon glyphicon-modal-window"></i> Шаблоны', 'url' => ['/template/index']],
+                ['label' => '<i class="glyphicon glyphicon-tag"></i> Купоны', 'url' => ['/coupon/index']],
+                ['label' => '<i class="glyphicon glyphicon-barcode"></i> Сообщения', 'url' => ['/barcode/index']],
+                ['label' => '<i class=" glyphicon glyphicon-briefcase"></i> Мерчанты', 'url' => ['/merchant/index']],
+                ['label' => '<i class=" glyphicon glyphicon-home"></i> Точки продаж', 'url' => ['/pos/index']],
             ]);
         } else {
             $items = ArrayHelper::merge($items, [
-                ['label' => 'Ваши купоны', 'url' => ['/coupon/index']],
-                ['label' => 'Валидация купона', 'url' => ['/coupon/validate']],
+                [
+                    'label' => '<i class="glyphicon glyphicon-tag"></i> Ваши купоны',
+                    'url' => ['/coupon/index']
+                ],
+                [
+                    'label' => '<i class="glyphicon glyphicon-ok-circle"></i> Валидация купона',
+                    'url' => ['/coupon/validate']
+                ],
             ]);
         }
         $items = ArrayHelper::merge($items, [
             [
-                'label' => 'Выйти [' . Yii::$app->user->identity->login . ']',
+                'label' => '<i class=" glyphicon glyphicon-off"></i> Выйти [' . Yii::$app->user->identity->login . ']',
                 'url' => ['/user/logout'],
                 'linkOptions' => ['data-method' => 'post']
             ]
         ]);
     } else {
         $items = ArrayHelper::merge($items, [
-            ['label' => 'Войти', 'url' => ['/user/login']]
+            ['label' => '<i class=" glyphicon glyphicon-lock"></i> Войти', 'url' => ['/user/login']]
         ]);
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
+        'encodeLabels' => false,
         'items' => $items,
     ]);
     NavBar::end();
@@ -85,7 +93,7 @@ AppAsset::register($this);
     <div class="container">
         <p class="pull-left"></p>
 
-        <p class="pull-right">&copy; iBeacon management <?= date('Y') ?></p>
+        <p class="pull-right">&copy; Найди Купон <?= date('Y') ?></p>
     </div>
 </footer>
 

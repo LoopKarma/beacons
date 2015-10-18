@@ -54,8 +54,8 @@ class CouponTemplate extends \yii\db\ActiveRecord
         'coupon', 'headerFields', 'primaryFields', 'secondaryFields', 'auxiliaryFields', 'backFields'
     ];
 
-    const SEND_ON_ENTER = 1;
-    const SEND_ON_LEAVING = 2;
+    const SEND_ON_ENTER = 0;
+    const SEND_ON_LEAVING = 1;
 
     /**
      * @inheritdoc

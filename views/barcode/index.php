@@ -16,14 +16,18 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Создать сообщение Barcode', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(
+            '<i class="glyphicon glyphicon-open"></i> Загрузить сообщения Barcode',
+            ['upload'],
+            ['class' => 'btn btn-info']
+        )?>
     </p>
+
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
             'message_id',
             [
                 'attribute' => 'merchant_id',
@@ -61,8 +65,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $value === null ? $column->grid->emptyCell : $html;
                 }
             ],
-            'utilize',
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+            ],
         ],
     ]); ?>
 

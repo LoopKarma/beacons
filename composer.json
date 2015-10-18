@@ -27,7 +27,8 @@
         "pkpass/pkpass": "dev-modification",
         "kartik-v/yii2-widget-select2": "*",
         "kartik-v/yii2-widget-fileinput": "@dev",
-        "kartik-v/yii2-widget-datepicker": "@dev"
+        "kartik-v/yii2-widget-datepicker": "@dev",
+        "league/csv": "^7.1@dev"
     },
     "require-dev": {
         "yiisoft/yii2-codeception": "*",

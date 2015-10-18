@@ -22,6 +22,24 @@ $isMerchant = isset(Yii::$app->user->identity->merchant_id);
         'columns' => [
             'coupon_id',
             [
+                'attribute' => 'confirmed',
+                'format' => 'raw',
+                'value' => function ($model, $key, $index, $column) {
+                    $value = $model->{$column->attribute};
+                    switch ($value) {
+                        case 1:
+                            $class = 'success';
+                            $label = 'Да';
+                            break;
+                        default:
+                            $class = 'default';
+                            $label = 'Нет';
+                    };
+                    $html = Html::tag('span', Html::encode($label), ['class' => 'label label-' . $class]);
+                    return $value === null ? $column->grid->emptyCell : $html;
+                }
+            ],
+            [
                 'attribute' => 'create_date',
                 'filter' => DatePicker::widget([
                     'model'=>$searchModel,
@@ -35,40 +53,28 @@ $isMerchant = isset(Yii::$app->user->identity->merchant_id);
                 ])
             ],
             [
+                'label' => 'Имя Мерчанта',
                 'attribute' => 'merchant_id',
-                'format' => 'html',
-                'value' => function ($model) {
-                    return $model->merchant->name . ' [' . $model->merchant_id . ']';
+                'value' => function ($model, $key, $index, $column) {
+                    /** @var $model \app\models\CouponTemplate */
+                    if ($model->merchant) {
+                        return $model->merchant->name;
+                    } else {
+                        return '';
+                    }
                 },
+                'filter' => Html::activeDropDownList(
+                    $searchModel,
+                    'merchant_id',
+                    \app\models\Merchant::getMerchantList(),
+                    ['class'=>'form-control']
+                ),
                 'visible' => !$isMerchant
             ],
             [
                 'label' => 'Название шаблона',
-                'format' => 'html',
-                'value' => function ($model) {
-                    return $model->template->name ? $model->template->name : false;
-                },
-                'visible' => $isMerchant,
-            ],
-            [
-                'attribute' => 'template_id',
-                'format' => 'html',
-                'value' => function ($model) {
-                    return 'Шаблон [' . $model->template_id . ']';
-                },
-                'visible' => !$isMerchant,
-            ],
-            [
-                'attribute' => 'uuid',
-                'visible' => !$isMerchant,
-            ],
-            [
-                'attribute' => 'major',
-                'visible' => !$isMerchant,
-            ],
-            [
-                'attribute' => 'minor',
-                'visible' => !$isMerchant,
+                'attribute' => 'templateName',
+                'value' => 'template.name',
             ],
             [
                 'attribute' => 'pos_id',

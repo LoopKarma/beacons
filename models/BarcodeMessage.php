@@ -4,7 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
-use app\helpers\RandomString;
+use app\helpers\RandomStringHelper;
 
 /**
  * This is the model class for table "{{%barcode_message}}".
@@ -77,10 +77,19 @@ class BarcodeMessage extends \yii\db\ActiveRecord
         return $this->hasOne(Merchant::className(), ['merchant_id' => 'merchant_id']);
     }
 
-    public static function generateMessage()
+    public static function generateMessage($merchantId)
     {
-        $lastCoupon = Coupon::find()->select('coupon_id')->orderBy(['coupon_id' => SORT_DESC])->asArray()->one();
+        $lastCoupon = Coupon::find()
+            ->select('coupon_id')
+            ->where(['merchant_id' => $merchantId])
+            ->orderBy(['coupon_id' => SORT_DESC])
+            ->asArray()
+            ->one();
+
         $nextCouponId = $lastCoupon['coupon_id'] + 1;
-        return RandomString::generate(BarcodeMessage::RANDOM_MESSAGE_LENGTH - strlen($nextCouponId)).$nextCouponId;
+
+        $randomString = new RandomStringHelper;
+        return $randomString
+            ->generateString(BarcodeMessage::RANDOM_MESSAGE_LENGTH - strlen($nextCouponId)).$nextCouponId;
     }
 }

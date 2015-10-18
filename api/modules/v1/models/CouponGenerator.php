@@ -25,10 +25,16 @@ class CouponGenerator extends Model
     public $pos;
     /** @var  \app\models\CouponTemplate $template */
     public $template;
+    /** @var  \app\models\BarcodeMessage $message */
+    public $message;
+
     /** @var string */
     public $serialNumber;
     /** @var string */
-    public $message;
+    public $messageText;
+
+    /** @var \app\components\Pass $pass */
+    protected $pass;
 
     /**
      * @inheritdoc
@@ -98,20 +104,21 @@ class CouponGenerator extends Model
 
     public function afterValidate()
     {
-        if (isset($this->template) && !$this->template->without_barcode) {
-            $this->message = $this->getBarcodeMessage();
+        if (!$this->hasErrors() && !$this->template->without_barcode) {
+            $this->messageText = $this->getBarcodeMessage();
         }
+        $this->pass = Yii::$app->pass;
         parent::afterValidate();
     }
 
     public function generateCoupon()
     {
-        $this->serialNumber = Yii::$app->security->generateRandomString(10);
-        if ($this->coupPath = Yii::$app->pass->generatePass($this)) {
-            $this->createCouponRecord($this->serialNumber);
+        $this->serialNumber = $this->getSerialNumber();
+        if ($this->coupPath = $this->pass->generatePass($this)) {
+            $this->createCouponRecord();
             return $this->coupPath;
         } else {
-            $this->addError('error', 'Error while creating coupon');
+            $this->addError('error', 'Error while creating coupon: ' . $this->pass->error);
         }
         return false;
     }
@@ -137,12 +144,12 @@ class CouponGenerator extends Model
     {
         $message = $this->findMessage();
         if (!$message) {
-            $message = BarcodeMessage::generateMessage();
+            $message = BarcodeMessage::generateMessage($this->merchant->primaryKey);
         }
         return $message;
     }
 
-    public function createCouponRecord($serialNumber)
+    public function createCouponRecord()
     {
         $coupon = new Coupon();
         $coupon->setAttributes([
@@ -150,26 +157,36 @@ class CouponGenerator extends Model
             'merchant_id' => $this->merchant->primaryKey,
             'pos_id' => $this->pos->primaryKey,
             'client' => $this->client,
-            'message' => $this->message,
+            'message' => $this->messageText,
             'uuid' => $this->uuid,
             'major' => $this->major,
             'minor' => $this->minor,
-            'serial_number' => $serialNumber,
+            'serial_number' => $this->serialNumber,
         ]);
-        $coupon->save(false);
+        if ($coupon->save(false) && $this->message) {
+            $this->message->updateAttributes(['utilize' => true]);
+        }
+    }
+
+    protected function getSerialNumber()
+    {
+        return Coupon::generateSerialNumber($this->merchant->primaryKey);
     }
 
     private function findMessage()
     {
+        /** @var \app\models\BarcodeMessage $message */
         $message = BarcodeMessage::find()
-            ->select('message')
             ->where([
                 'merchant_id' => $this->merchant->primaryKey,
-                'utilize' => null
+                'utilize' => 0
             ])
             ->orderBy(['create_date' => SORT_ASC])
             ->one();
 
-        return $message;
+        if ($message) {
+            $this->message = $message;
+        }
+        return isset($message->message) ? $message->message : false;
     }
 }

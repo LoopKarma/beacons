@@ -3,11 +3,13 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\BarcodeMessage;
-use app\models\search\BarcodeMessageSearch;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use app\models\BarcodeMessage;
+use yii\web\NotFoundHttpException;
+use app\models\forms\MessageUpload;
+use app\models\search\BarcodeMessageSearch;
 
 /**
  * BarcodeController implements the CRUD actions for BarcodeMessage model.
@@ -17,13 +19,39 @@ class BarcodeController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'actions' => ['index', 'view', 'update', 'delete', 'upload'],
+                        'allow' => true,
+                        'roles' => [\app\models\User::ROLE_ADMIN],
+                    ],
+                    [
+                        'actions' => ['create'],
+                        'allow' => false,
+                    ]
+                ],
+            ],
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['post'],
                 ],
+
             ],
         ];
+    }
+
+    public function actionUpload()
+    {
+        $model = new MessageUpload();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if ($model->uploadMessages()) {
+                Yii::$app->session->setFlash('success', 'Загружено ' . $model->saveCount . ' сообщений');
+            }
+        }
+        return $this->render('upload', ['model' => $model]);
     }
 
     /**

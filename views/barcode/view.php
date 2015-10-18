@@ -29,9 +29,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'message_id',
-            'merchant_id',
+            [
+                'attribute' => 'merchant_id',
+                'value' => "{$model->merchant->name} [{$model->merchant->merchant_id}]",
+            ],
             'message',
-            'utilize',
+            [
+                'attribute' => 'utilize',
+                'value' => $model->utilize ? 'Да' : 'Нет',
+            ],
         ],
     ]) ?>
 
