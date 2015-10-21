@@ -6,6 +6,7 @@ use app\helpers\RandomStringHelper;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\behaviors\TimestampBehavior;
+use yii\helpers\VarDumper;
 use yii\validators\DateValidator;
 
 /**
@@ -13,6 +14,7 @@ use yii\validators\DateValidator;
  *
  * @property integer $coupon_id
  * @property string $create_date
+ * @property string $change_date
  * @property string $update_date
  * @property integer $template_id
  * @property integer $merchant_id
@@ -59,6 +61,7 @@ class Coupon extends \yii\db\ActiveRecord
         return [
             'coupon_id' => 'ID',
             'create_date' => 'Дата генерации',
+            'change_date' => 'Дата изменения',
             'template_id' => 'ID шаблона',
             'merchant_id' => 'Мерчант',
             'pos_id' => 'Точка продаж',
@@ -81,7 +84,7 @@ class Coupon extends \yii\db\ActiveRecord
             [
                 'class' => TimestampBehavior::className(),
                 'createdAtAttribute' => 'create_date',
-                'updatedAtAttribute' => false,
+                'updatedAtAttribute' => 'change_date',
                 'value' => function () {
                     return date("Y-m-d H:i:s");
                 },
@@ -137,6 +140,23 @@ class Coupon extends \yii\db\ActiveRecord
             $query = $this->find()->where(['>=', 'create_date', $fromDate]);
             if ($toDate) {
                 $query->andWhere(['<=', 'create_date', $toDate]);
+            }
+            if ($merchant) {
+                $query->andWhere(['merchant_id' => $merchant]);
+            }
+            return $query->count();
+        }
+    }
+
+    public function getConfirmedCoupons($fromDate, $toDate = false, $merchant = false)
+    {
+        $validator = new DateValidator(['format' => 'Y-m-d']);
+        if (!$validator->validate($fromDate) || ($toDate && !$validator->validate($fromDate))) {
+            throw new InvalidParamException('Invalid date format');
+        } else {
+            $query = $this->find()->where(['>=', 'change_date', $fromDate])->andWhere(['confirmed' => 1]);
+            if ($toDate) {
+                $query->andWhere(['<=', 'change_date', $toDate]);
             }
             if ($merchant) {
                 $query->andWhere(['merchant_id' => $merchant]);

@@ -12,7 +12,8 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'merchant_id')->dropDownList(\app\models\Merchant::getMerchantList()) ?>
+    <?= $form->field($model, 'merchant_id')
+        ->dropDownList(\app\models\Merchant::getMerchantList(), ['prompt' => 'Выберите мерчанта']) ?>
 
     <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
 

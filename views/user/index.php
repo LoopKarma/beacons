@@ -85,7 +85,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     $searchModel,
                     'merchant_id',
                     \app\models\Merchant::getMerchantList(),
-                    ['class'=>'form-control']
+                    [
+                        'class'=>'form-control',
+                        'prompt' => 'Выберите мерчанта'
+                    ]
                 ),
             ],
             ['class' => 'yii\grid\ActionColumn'],

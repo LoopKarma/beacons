@@ -24,7 +24,6 @@ class RbacController extends Controller
 
         $added = 0;
 
-
         // add rule
         $coupOwnerRule = new CouponOwnerRule();
         $auth->add($coupOwnerRule);
@@ -39,6 +38,13 @@ class RbacController extends Controller
         $roleMerchant->description = 'Роль организации';
         if ($auth->add($roleMerchant)) {
             $auth->addChild($roleMerchant, $viewCoupon);
+            $added++;
+        }
+
+        //add seller role
+        $roleSeller = $auth->createRole(User::ROLE_SELLER);
+        $roleSeller->description = 'Роль продавца';
+        if ($auth->add($roleSeller)) {
             $added++;
         }
 

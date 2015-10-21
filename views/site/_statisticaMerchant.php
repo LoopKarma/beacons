@@ -10,7 +10,7 @@ $minPosId = $model->getAttributeValueAmongAll('pos_id', 'min', $merchant);
 $minTemplateId = $model->getAttributeValueAmongAll('template_id', 'min', $merchant);
 ?>
 
-<div class="col-lg-4">
+<div class="col-lg-6">
     <h2>Больше всего купонов:</h2>
     <ul class="list-group">
         <?php if ($maxPosId && $maxPos = \app\models\Pos::findOne($maxPosId)):?>
@@ -30,7 +30,7 @@ $minTemplateId = $model->getAttributeValueAmongAll('template_id', 'min', $mercha
         <?php endif?>
     </ul>
 </div>
-<div class="col-lg-4">
+<div class="col-lg-6">
     <h2>Меньше всего купонов:</h2>
     <ul class="list-group">
         <?php if ($minPosId && $minPos = \app\models\Pos::findOne($minPosId)):?>
@@ -50,14 +50,4 @@ $minTemplateId = $model->getAttributeValueAmongAll('template_id', 'min', $mercha
             </li>
         <?php endif?>
     </ul>
-</div>
-<div class="col-lg-4">
-    <h2>Heading</h2>
-
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-        dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-        ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-        fugiat nulla pariatur.</p>
-
-    <p></p>
 </div>

@@ -13,7 +13,8 @@ use yii\widgets\ActiveForm;
     <?php $form = ActiveForm::begin(); ?>
 
     <?php if (Yii::$app->user->can(\app\models\User::ROLE_ADMIN)) : ?>
-        <?= $form->field($model, 'merchant_id')->dropDownList(\app\models\Merchant::getMerchantList()) ?>
+        <?= $form->field($model, 'merchant_id')
+            ->dropDownList(\app\models\Merchant::getMerchantList(), ['prompt' => 'Выберите мерчанта']) ?>
     <?php else: ?>
         <?= $form
             ->field($model, 'merchant_id')

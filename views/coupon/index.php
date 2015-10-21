@@ -24,6 +24,15 @@ $isMerchant = isset(Yii::$app->user->identity->merchant_id);
             [
                 'attribute' => 'confirmed',
                 'format' => 'raw',
+                'filter' => Html::activeDropDownList(
+                    $searchModel,
+                    'confirmed',
+                    ['0' => 'Нет', '1' => 'Да'],
+                    [
+                        'class'=>'form-control',
+                        'prompt' => '---'
+                    ]
+                ),
                 'value' => function ($model, $key, $index, $column) {
                     $value = $model->{$column->attribute};
                     switch ($value) {
@@ -67,7 +76,10 @@ $isMerchant = isset(Yii::$app->user->identity->merchant_id);
                     $searchModel,
                     'merchant_id',
                     \app\models\Merchant::getMerchantList(),
-                    ['class'=>'form-control']
+                    [
+                        'class'=>'form-control',
+                        'prompt' => 'Выберите мерчанта'
+                    ]
                 ),
                 'visible' => !$isMerchant
             ],

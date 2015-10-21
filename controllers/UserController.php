@@ -18,12 +18,16 @@ class UserController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                //'only' => ['login', 'logout'],
                 'rules' => [
                     [
                         'actions' => ['login'],
                         'allow' => true,
                         'roles' => ['?'],
+                    ],
+                    [
+                        'actions' => ['login'],
+                        'allow' => false,
+                        'roles' => ['@'],
                     ],
                     [
                         'actions' => ['logout'],

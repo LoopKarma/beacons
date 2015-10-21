@@ -24,6 +24,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'role')->dropDownList(
         [
             \app\models\User::ROLE_MERCHANT => 'мерчант',
+            \app\models\User::ROLE_SELLER => 'продавец',
             \app\models\User::ROLE_ADMIN => 'администратор',
         ],
         [
@@ -38,7 +39,8 @@ use yii\widgets\ActiveForm;
 
     <?php //= $form->field($model, 'auth_key')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'merchant_id')->dropDownList(\app\models\Merchant::getMerchantList()) ?>
+    <?= $form->field($model, 'merchant_id')
+        ->dropDownList(\app\models\Merchant::getMerchantList(), ['prompt' => 'Выберите мерчанта']) ?>
 
     <?= $form->field($model, 'active')->checkbox(['label' => 'Активен'])->label(false) ?>
     <div class="form-group">

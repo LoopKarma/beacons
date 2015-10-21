@@ -105,7 +105,6 @@ class Merchant extends \yii\db\ActiveRecord
     {
         $list = Yii::$app->cache->get(static::CACHE_KEY);
         if (!$list) {
-            $list = ['' => '(нет значения)'];
             $items = self::find()->select(['merchant_id', 'name'])->asArray()->all();
             foreach ($items as $item) {
                 $list[$item['merchant_id']] = $item['name'];

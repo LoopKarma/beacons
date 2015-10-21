@@ -21,7 +21,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ]
     ]); ?>
 
-    <?= $form->field($model, 'merchant_id')->dropDownList(\app\models\Merchant::getMerchantList()) ?>
+    <?= $form->field($model, 'merchant_id')
+        ->dropDownList(\app\models\Merchant::getMerchantList(), ['prompt' => 'Выберите мерчанта']) ?>
 
     <?= $form->field($model, 'file')->widget(FileInput::className(), [
         'language' => 'ru',

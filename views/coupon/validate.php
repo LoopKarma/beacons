@@ -7,7 +7,9 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\forms\CouponValidate */
 
 $this->title = 'Валидация купона';
-$this->params['breadcrumbs'][] = ['label' => 'Купоны', 'url' => ['index']];
+if (Yii::$app->user->can(\app\models\User::ROLE_MERCHANT)) {
+    $this->params['breadcrumbs'][] = ['label' => 'Купоны', 'url' => ['index']];
+}
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 

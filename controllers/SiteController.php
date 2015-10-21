@@ -15,19 +15,13 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout', 'index', 'about'],
+                'only' => ['index'],
                 'rules' => [
                     [
-                        'actions' => ['logout', 'index', 'about'],
+                        'actions' => ['index'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
                 ],
             ],
         ];
@@ -46,11 +40,5 @@ class SiteController extends Controller
     {
         $model = new Coupon();
         return $this->render('index', ['model' => $model]);
-    }
-
-
-    public function actionAbout()
-    {
-        return $this->render('about');
     }
 }

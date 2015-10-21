@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'adminEmail' => 'admin@example.com',
+    'adminEmail' => 'dmitry.artamonov@getcouponapp.com',
     'adminPassword' => '123456',
 ];

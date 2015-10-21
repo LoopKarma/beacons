@@ -45,12 +45,19 @@ AppAsset::register($this);
                 ['label' => '<i class=" glyphicon glyphicon-briefcase"></i> Мерчанты', 'url' => ['/merchant/index']],
                 ['label' => '<i class=" glyphicon glyphicon-home"></i> Точки продаж', 'url' => ['/pos/index']],
             ]);
-        } else {
+        } elseif (Yii::$app->user->can(\app\models\User::ROLE_MERCHANT)) {
             $items = ArrayHelper::merge($items, [
                 [
                     'label' => '<i class="glyphicon glyphicon-tag"></i> Ваши купоны',
                     'url' => ['/coupon/index']
                 ],
+                [
+                    'label' => '<i class="glyphicon glyphicon-ok-circle"></i> Валидация купона',
+                    'url' => ['/coupon/validate']
+                ],
+            ]);
+        } else {
+            $items = ArrayHelper::merge($items, [
                 [
                     'label' => '<i class="glyphicon glyphicon-ok-circle"></i> Валидация купона',
                     'url' => ['/coupon/validate']

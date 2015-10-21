@@ -24,6 +24,7 @@ class User extends ActiveRecord implements IdentityInterface
 {
     const ROLE_ADMIN = 'administrator';
     const ROLE_MERCHANT = 'merchant';
+    const ROLE_SELLER = 'seller';
 
     /**
      * @inheritdoc
@@ -45,7 +46,12 @@ class User extends ActiveRecord implements IdentityInterface
             [['password'], 'string', 'max' => 256],
             [['merchant_id', 'active'], 'integer'],
             [['merchant_id'], 'exist', 'targetAttribute' => 'merchant_id', 'targetClass' => Merchant::className()],
-            [['role'], 'in', 'enableClientValidation' => true, 'range' => [static::ROLE_ADMIN, static::ROLE_MERCHANT]],
+            [
+                ['role'],
+                'in',
+                'enableClientValidation' => true,
+                'range' => [static::ROLE_ADMIN, static::ROLE_MERCHANT, static::ROLE_SELLER]
+            ],
             [['role'], 'validateMerchant'],
         ];
     }
@@ -92,7 +98,7 @@ class User extends ActiveRecord implements IdentityInterface
 
     public function validateMerchant($attribute)
     {
-        if ($this->{$attribute} == static::ROLE_MERCHANT && !$this->merchant_id) {
+        if (in_array($this->{$attribute}, [static::ROLE_MERCHANT, static::ROLE_SELLER])&& !$this->merchant_id) {
             $this->addError('merchant_id', 'Необходимо выбрать организацию');
         }
     }

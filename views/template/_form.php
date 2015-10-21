@@ -36,7 +36,8 @@ $posInitText = !$model->isNewRecord ? $model->getPoses('address') : null;
         $model::SEND_ON_LEAVING => 'На выходе',
     ])?>
 
-    <?= $form->field($model, 'merchant_id')->dropDownList(\app\models\Merchant::getMerchantList()) ?>
+    <?= $form->field($model, 'merchant_id')
+        ->dropDownList(\app\models\Merchant::getMerchantList(), ['prompt' => 'Выберите мерчанта']) ?>
 
     <div class="form-group field-coupontemplate-pos has-success">
         <?= Html::label('Точки продаж') ?>

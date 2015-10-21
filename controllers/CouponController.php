@@ -31,16 +31,12 @@ class CouponController extends Controller
                     [
                         'actions' => ['index', 'view'],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => [\app\models\User::ROLE_ADMIN, \app\models\User::ROLE_MERCHANT],
                     ],
                     [
                         'actions' => ['validate'],
                         'allow' => true,
-                        'roles' => [\app\models\User::ROLE_MERCHANT],
-                    ],
-                    [
-                        'actions' => ['validate'],
-                        'allow' => false,
+                        'roles' => [\app\models\User::ROLE_MERCHANT, \app\models\User::ROLE_SELLER],
                     ],
                 ],
             ],
