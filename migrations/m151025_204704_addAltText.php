@@ -12,7 +12,7 @@ class m151025_204704_addAltText extends Migration
         $this->addColumn(
             $this->tableName,
             'show_serial',
-            $this->smallInteger()->defaultValue(1) . ' AFTER without_barcode'
+            $this->smallInteger()->defaultValue(0) . ' AFTER without_barcode'
         );
     }
 
