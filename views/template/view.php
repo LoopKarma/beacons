@@ -66,6 +66,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => $model->without_barcode ? 'Баркода нет' : 'Баркод есть',
             ],
             [
+                'attribute' => 'show_serial',
+                'value' => $model->show_serial ? 'да' : 'нет',
+            ],
+            [
                 'attribute' => 'beacon_relevant_text',
                 'visible' => !$model->without_barcode,
             ],

@@ -59,14 +59,21 @@ class Pass extends Component
                 'logoText'        => $model->template->logo_text,
             ];
         } else {
+            if (isset($model->template->show_serial) && $model->template->show_serial) {
+                $altText = $model->serialNumber;
+            } else {
+                $altText = '';
+            }
             $visualAppearanceKeys = [
                 'barcode'         => [
+                    'altText'         => $altText,
                     'format'          => $model->template->barcode_format,
                     'message'         => mb_strtoupper($model->messageText),
                     'messageEncoding' => $model->template->barcode_message_encoding
                 ],
                 'barcodes'         => [
                     [
+                        'altText'         => $altText,
                         'format'          => $model->template->barcode_format,
                         'message'         => mb_strtoupper($model->messageText),
                         'messageEncoding' => $model->template->barcode_message_encoding

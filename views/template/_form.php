@@ -93,6 +93,8 @@ $posInitText = !$model->isNewRecord ? $model->getPoses('address') : null;
 
     <?= $form->field($model, 'without_barcode')->checkbox()?>
 
+    <?= $form->field($model, 'show_serial')->checkbox()?>
+
 
     <?= $form->field($model, 'barcode_format')
         ->dropDownList(array_combine($model::BARCODE_FORMAT, $model::BARCODE_FORMAT))?>
@@ -206,9 +208,11 @@ $(document).ready(function() {
         if (this.checked) {
             $('.field-coupontemplate-barcode_format').hide();
             $('.field-coupontemplate-barcode_message_encoding').hide();
+            $('#coupontemplate-show_serial').prop('checked', false).prop('disabled', true);
         } else {
             $('.field-coupontemplate-barcode_format').show();
             $('.field-coupontemplate-barcode_message_encoding').show();
+            $('#coupontemplate-show_serial').prop('disabled', false);
         }
     });
 });
