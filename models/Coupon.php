@@ -133,7 +133,7 @@ class Coupon extends \yii\db\ActiveRecord
 
     public function getCouponCount($fromDate, $toDate = false, $merchant = false)
     {
-        $validator = new DateValidator(['format' => 'Y-m-d']);
+        $validator = new DateValidator(['format' => 'php:Y-m-d']);
         if (!$validator->validate($fromDate) || ($toDate && !$validator->validate($fromDate))) {
             throw new InvalidParamException('Invalid date format');
         } else {
@@ -150,7 +150,7 @@ class Coupon extends \yii\db\ActiveRecord
 
     public function getConfirmedCoupons($fromDate, $toDate = false, $merchant = false)
     {
-        $validator = new DateValidator(['format' => 'Y-m-d']);
+        $validator = new DateValidator(['format' => 'php:Y-m-d']);
         if (!$validator->validate($fromDate) || ($toDate && !$validator->validate($fromDate))) {
             throw new InvalidParamException('Invalid date format');
         } else {
