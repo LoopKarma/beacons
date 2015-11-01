@@ -72,11 +72,18 @@ class BarcodeMessage extends \yii\db\ActiveRecord
         ];
     }
 
+    /**
+     * @return \yii\db\ActiveQuery
+     */
     public function getMerchant()
     {
         return $this->hasOne(Merchant::className(), ['merchant_id' => 'merchant_id']);
     }
 
+    /**
+     * @param $merchantId
+     * @return string
+     */
     public static function generateMessage($merchantId)
     {
         $lastCoupon = Coupon::find()
@@ -91,5 +98,24 @@ class BarcodeMessage extends \yii\db\ActiveRecord
         $randomString = new RandomStringHelper;
         return $randomString
             ->generateString(BarcodeMessage::RANDOM_MESSAGE_LENGTH - strlen($nextCouponId)).$nextCouponId;
+    }
+
+
+    /**
+     * @param CouponTemplate $template
+     * @return bool
+     */
+    public static function sendNoAvaliableMessagesInfo(\app\models\CouponTemplate $template)
+    {
+        $text = '<p>Закончились доступные сообщения баркода у шаблона ';
+        $text .= '<a href="'.Yii::$app->params['siteUrl'].'/template/view?id='.$template->template_id.'">'
+            .($template->name ?: $template->template_id).'</a>';
+
+        return Yii::$app->mailer->compose()
+            ->setFrom(Yii::$app->params['fromEmail'])
+            ->setTo(Yii::$app->params['sendEmail'])
+            ->setSubject('Кончились загруженные сообщения для шаблона.')
+            ->setHtmlBody($text)
+            ->send();
     }
 }

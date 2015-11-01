@@ -23,6 +23,7 @@ use yii\helpers\Html;
  * @property string $beacon_relevant_text
  * @property string $without_barcode
  * @property string $show_serial
+ * @property string $do_not_generate_messages
  * @property string $barcode_format
  * @property string $barcode_message_encoding
  * @property string $send_unlimited
@@ -92,7 +93,7 @@ class CouponTemplate extends \yii\db\ActiveRecord
             [['name'], 'string', 'max' => 50],
             [['barcode_format', 'barcode_message_encoding'], 'string', 'max' => 100],
             [['foreground_color', 'background_color'], 'string', 'max' => 16, 'min' => 10],
-            [['send_unlimited', 'active', 'show_serial'], 'in', 'range' => [0, 1]],
+            [['send_unlimited', 'active', 'show_serial', 'do_not_generate_messages'], 'in', 'range' => [0, 1]],
             [
                 ['foreground_color', 'background_color'],
                 'match',
@@ -133,6 +134,7 @@ class CouponTemplate extends \yii\db\ActiveRecord
             'beacon_relevant_text' => 'Beacon Relevant Text',
             'without_barcode' => 'Без barcode',
             'show_serial' => 'Показывать серийный номер купона',
+            'do_not_generate_messages' => 'Не генерировать случайные сообщения для купонов',
             'barcode_format' => 'Barcode Format',
             'barcode_message_encoding' => 'Barcode Message Encoding',
             'send_unlimited' => 'Неограниченное количество купонов',

@@ -70,6 +70,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => $model->show_serial ? 'да' : 'нет',
             ],
             [
+                'attribute' => 'do_not_generate_messages',
+                'value' => $model->do_not_generate_messages ? 'да' : 'нет',
+            ],
+            [
                 'attribute' => 'beacon_relevant_text',
                 'visible' => !$model->without_barcode,
             ],

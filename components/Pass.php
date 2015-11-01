@@ -114,7 +114,6 @@ class Pass extends Component
      */
     protected function addPossibleImages(PKPass &$pkPass, CouponTemplate $template)
     {
-        //VarDumper::dump($template, 10, 1); die();
         $pkPass->addFile($template->getFilePath('icon'), 'icon.png');
         $pkPass->addFile($template->getFilePath('icon2x'), 'icon@2x.png');
         $pkPass->addFile($template->getFilePath('icon3x'), 'icon@3x.png');

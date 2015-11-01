@@ -104,11 +104,15 @@ class CouponGenerator extends Model
 
     public function afterValidate()
     {
-        if (!$this->hasErrors() && !$this->template->without_barcode) {
+        if (!$this->template->without_barcode) {
             $this->messageText = $this->getBarcodeMessage();
         }
-        $this->pass = Yii::$app->pass;
-        parent::afterValidate();
+        if (!$this->hasErrors()) {
+            $this->pass = Yii::$app->pass;
+            parent::afterValidate();
+        } else {
+            return false;
+        }
     }
 
     public function generateCoupon()
@@ -144,7 +148,13 @@ class CouponGenerator extends Model
     {
         $message = $this->findMessage();
         if (!$message) {
-            $message = BarcodeMessage::generateMessage($this->merchant->primaryKey);
+            if ($this->template->do_not_generate_messages) {
+                $this->addError('error', 'No avaliable messages for coupon');
+                BarcodeMessage::sendNoAvaliableMessagesInfo($this->template);
+                Yii::error('No avaliable messages for coupon ' . $this->template->template_id);
+            } else {
+                $message = BarcodeMessage::generateMessage($this->merchant->primaryKey);
+            }
         }
         return $message;
     }

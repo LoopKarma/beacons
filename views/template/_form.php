@@ -14,6 +14,9 @@ use yii\web\JsExpression;
 $isQR = ($model->barcode_format == 'PKBarcodeFormatQR');
 $posInitValue = !$model->isNewRecord ? $model->getPoses() : null;
 $posInitText = !$model->isNewRecord ? $model->getPoses('address') : null;
+if ($model->isNewRecord) {
+    $model->active = 1;
+}
 ?>
 
 <div class="coupon-template-form">
@@ -24,8 +27,6 @@ $posInitText = !$model->isNewRecord ? $model->getPoses('address') : null;
             'id' => 'template-form'
         ]
     ]); ?>
-
-    <?php $model->isNewRecord ? $model->active = 1 : null; ?>
 
     <?= $form->field($model, 'active')->checkbox()?>
 
@@ -95,6 +96,7 @@ $posInitText = !$model->isNewRecord ? $model->getPoses('address') : null;
 
     <?= $form->field($model, 'show_serial')->checkbox()?>
 
+    <?= $form->field($model, 'do_not_generate_messages')->checkbox()?>
 
     <?= $form->field($model, 'barcode_format')
         ->dropDownList(array_combine($model::BARCODE_FORMAT, $model::BARCODE_FORMAT))?>
@@ -207,10 +209,12 @@ $(document).ready(function() {
     $('#coupontemplate-without_barcode').on('click', function(){
         if (this.checked) {
             $('.field-coupontemplate-barcode_format').hide();
+            $('.field-coupontemplate-do_not_generate_messages').hide();
             $('.field-coupontemplate-barcode_message_encoding').hide();
             $('#coupontemplate-show_serial').prop('checked', false).prop('disabled', true);
         } else {
             $('.field-coupontemplate-barcode_format').show();
+            $('.field-coupontemplate-do_not_generate_messages').show();
             $('.field-coupontemplate-barcode_message_encoding').show();
             $('#coupontemplate-show_serial').prop('disabled', false);
         }

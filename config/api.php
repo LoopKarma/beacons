@@ -48,6 +48,10 @@ $config = [
                 ],
             ],
         ],
+        'mailer' => [
+            'class' => 'yii\swiftmailer\Mailer',
+            'useFileTransport' => true,
+        ],
         'pass' => [
             'class' => 'app\components\Pass',
             'passFilePath' => '@admin/files/pass/',
