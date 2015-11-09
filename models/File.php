@@ -57,7 +57,7 @@ class File extends \yii\db\ActiveRecord
             $model->file = $file;
         }
         $model->original_name = $model->file->name;
-        $model->name = crc32($file->name.$file->size.$file->extension) . '.' . $model->file->getExtension();
+        $model->name = crc32($file->name.$file->size.$file->extension.rand(1,9)) . '.' . $model->file->getExtension();
         $model->path = $model->getSavePath() . $model->name;
         if ($model->save()) {
             $file->saveAs(Yii::getAlias($model->getSavePath(true) . $model->name));

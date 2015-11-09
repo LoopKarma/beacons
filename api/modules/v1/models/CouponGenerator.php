@@ -104,10 +104,11 @@ class CouponGenerator extends Model
 
     public function afterValidate()
     {
-        if (!$this->template->without_barcode) {
-            $this->messageText = $this->getBarcodeMessage();
-        }
+
         if (!$this->hasErrors()) {
+            if (!$this->template->without_barcode) {
+                $this->messageText = $this->getBarcodeMessage();
+            }
             $this->pass = Yii::$app->pass;
             parent::afterValidate();
         } else {
