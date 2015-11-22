@@ -95,7 +95,7 @@ class CouponTemplate extends \yii\db\ActiveRecord
             [['foreground_color', 'background_color'], 'string', 'max' => 16, 'min' => 10],
             [['send_unlimited', 'active', 'show_serial', 'do_not_generate_messages'], 'in', 'range' => [0, 1]],
             [
-                ['foreground_color', 'background_color'],
+                ['foreground_color', 'background_color', 'labelColor'],
                 'match',
                 'pattern' => '/^rgb\(\d+,\d+,\d+\)$/',
                 'message' => 'Поле должно содержать данные вида rgb(x,x,x)'

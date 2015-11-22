@@ -54,9 +54,10 @@ class Pass extends Component
         $relevanceKeys        = [];
         if ($model->template->without_barcode) {
             $visualAppearanceKeys = [
-                'foregroundColor' => $model->template->foreground_color,
-                'backgroundColor' => $model->template->background_color,
-                'logoText'        => $model->template->logo_text,
+                'foregroundColor' => isset($model->template->foreground_color)?$model->template->foreground_color : '',
+                'backgroundColor' => isset($model->template->background_color)?$model->template->background_color : '',
+                'labelColor'      => isset($model->template->label_color) ? $model->template->label_color : '',
+                'logoText'        => isset($model->template->logo_text) ? $model->template->logo_text : '',
             ];
         } else {
             if (isset($model->template->show_serial) && $model->template->show_serial) {
@@ -79,9 +80,10 @@ class Pass extends Component
                         'messageEncoding' => $model->template->barcode_message_encoding
                     ]
                 ],
-                'foregroundColor' => $model->template->foreground_color,
-                'backgroundColor' => $model->template->background_color,
-                'logoText'        => $model->template->logo_text,
+                'foregroundColor' => isset($model->template->foreground_color)?$model->template->foreground_color : '',
+                'backgroundColor' => isset($model->template->background_color)?$model->template->background_color : '',
+                'labelColor'      => isset($model->template->label_color) ? $model->template->label_color : '',
+                'logoText'        => isset($model->template->logo_text) ? $model->template->logo_text : '',
             ];
         }
         $webServiceKeys = [];

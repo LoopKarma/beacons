@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use kartik\date\DatePicker;
@@ -11,6 +12,15 @@ use kartik\date\DatePicker;
 $this->title = 'Купоны';
 $this->params['breadcrumbs'][] = $this->title;
 $isMerchant = isset(Yii::$app->user->identity->merchant_id);
+$summary = '<div class="pull-left">Показаны купоны с <b>{begin}</b> до <b>{end}</b> из <b>{totalCount}</b></div>';
+if (!empty(array_filter($searchModel->attributes))) {
+    $link = Html::a(
+        'Скачать отчет по купонам',
+        Url::current(['csv' => 1]),
+        ['class' => 'btn btn-primary', 'data-pjax' => 0]
+    );
+    $summary .= "<div class=\"pull-right\"><p>{$link}</p></div>";
+}
 ?>
 <div class="coupon-index">
 
@@ -19,6 +29,7 @@ $isMerchant = isset(Yii::$app->user->identity->merchant_id);
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'summary' => $summary,
         'columns' => [
             'coupon_id',
             [

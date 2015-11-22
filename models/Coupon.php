@@ -2,11 +2,11 @@
 
 namespace app\models;
 
-use app\helpers\RandomStringHelper;
 use Yii;
+use app\helpers\CsvWriter;
+use app\helpers\RandomStringHelper;
 use yii\base\InvalidParamException;
 use yii\behaviors\TimestampBehavior;
-use yii\helpers\VarDumper;
 use yii\validators\DateValidator;
 
 /**
@@ -189,5 +189,47 @@ class Coupon extends \yii\db\ActiveRecord
         } else {
             throw new InvalidParamException('Attribute ' . $attribute .' is not exist');
         }
+    }
+
+    /**
+     * @param \yii\db\QueryInterface $searchQuery
+     * @return \app\helpers\CsvWriter|bool
+     */
+    public function generateCsv($searchQuery)
+    {
+        $fieldset = $this->attributeLabels();
+        /** @var array $coupons */
+        $coupons = $searchQuery->asArray()->all();
+        if (!empty($coupons)) {
+            $writer = new CsvWriter();
+            $writer->writeHeader($fieldset);
+            foreach ($coupons as $row) {
+                $line = [];
+                foreach ($fieldset as $key => $field) {
+                    $line[] = $row[$key];
+                }
+                $writer->writeLine($line);
+            }
+        }
+        return isset($writer) ? $writer : false;
+    }
+
+    public function getCsvFields()
+    {
+        return [
+            'coupon_id' => 'ID',
+            'create_date' => 'Дата генерации',
+            'change_date' => 'Дата изменения',
+            'template_id' => 'ID шаблона',
+            'merchant_id' => 'Мерчант',
+            'pos_id' => 'Точка продаж',
+            'client' => 'Client',
+            'confirmed' => 'Подтверждено',
+            'message' => 'Сообщение',
+            'uuid' => 'Uuid',
+            'major' => '* Major *',
+            'minor' => '* Minor *',
+            'serial_number' => 'Серийный номер',
+        ];
     }
 }

@@ -70,7 +70,7 @@ class CouponController extends Controller
      * Lists all Coupon models.
      * @return mixed
      */
-    public function actionIndex()
+    public function actionIndex($csv = false)
     {
         if (Yii::$app->user->identity->merchant_id) {
             $searchModel = new CouponSearch(['merchant_id' => Yii::$app->user->identity->merchant_id]);
@@ -79,11 +79,26 @@ class CouponController extends Controller
         }
 
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        if ($csv) {
+            $headers = Yii::$app->response->headers;
+            $headers->set('Pragma', 'no-cache');
+            $headers->set('Content-type', 'text/csv');
+            $headers->set('Expires', '0');
+            $cswWriter = $searchModel->generateCsv($dataProvider->query);
+            if ($cswWriter) {
+                Yii::$app->response->sendContentAsFile(
+                    iconv('utf-8', 'windows-1251', $cswWriter->getContent()),
+                    'coup_report_' . date('d.m.Y_H:i:s') . '.csv'
+                );
+            } else {
+                Yii::$app->session->addFlash('danger', 'Не удалось создать файл.');
+            }
+        } else {
+            return $this->render('index', [
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+        }
     }
 
     /**
