@@ -9,12 +9,16 @@ class m151122_183718_addLabelColorTemplate extends Migration
 
     public function up()
     {
-        $this->addColumn($this->tableName, 'labelColor', $this->string(16)->defaultValue(null));
+        $this->addColumn(
+            $this->tableName,
+            'label_color',
+            $this->string(16)->defaultValue(null) . ' AFTER foreground_color'
+        );
     }
 
     public function down()
     {
-        $this->dropColumn($this->tableName, 'labelColor');
+        $this->dropColumn($this->tableName, 'label_color');
     }
 
     /*

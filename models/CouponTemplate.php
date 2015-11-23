@@ -92,10 +92,10 @@ class CouponTemplate extends \yii\db\ActiveRecord
             ],
             [['name'], 'string', 'max' => 50],
             [['barcode_format', 'barcode_message_encoding'], 'string', 'max' => 100],
-            [['foreground_color', 'background_color'], 'string', 'max' => 16, 'min' => 10],
+            [['foreground_color', 'background_color', 'label_color'], 'string', 'max' => 16, 'min' => 10],
             [['send_unlimited', 'active', 'show_serial', 'do_not_generate_messages'], 'in', 'range' => [0, 1]],
             [
-                ['foreground_color', 'background_color', 'labelColor'],
+                ['foreground_color', 'background_color', 'label_color'],
                 'match',
                 'pattern' => '/^rgb\(\d+,\d+,\d+\)$/',
                 'message' => 'Поле должно содержать данные вида rgb(x,x,x)'
@@ -131,6 +131,7 @@ class CouponTemplate extends \yii\db\ActiveRecord
             'coupon' => 'Coupon',
             'foreground_color' => 'Foreground Color',
             'background_color' => 'Background Color',
+            'label_color' => 'Label Color',
             'beacon_relevant_text' => 'Beacon Relevant Text',
             'without_barcode' => 'Без barcode',
             'show_serial' => 'Показывать серийный номер купона',

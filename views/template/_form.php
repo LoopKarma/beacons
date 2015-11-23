@@ -87,7 +87,7 @@ if ($model->isNewRecord) {
 
     <?= $form->field($model, 'foreground_color')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'labelColor')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'label_color')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'beacon_relevant_text')->textInput([
         'maxlength' => true,

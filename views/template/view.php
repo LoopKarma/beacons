@@ -87,6 +87,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'background_color',
             'foreground_color',
+            'label_color',
             [
                 'attribute' => 'icon',
                 'format' => 'raw',
