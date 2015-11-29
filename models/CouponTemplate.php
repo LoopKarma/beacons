@@ -82,7 +82,7 @@ class CouponTemplate extends \yii\db\ActiveRecord
                 ],
                 'integer'
             ],
-            [['merchant_id', 'coupon', 'name'], 'required'],
+            [['merchant_id', 'coupon', 'name', 'label_color'], 'required'],
             [['icon', 'logo', 'strip'], 'required', 'on' => 'create'],
             [['coupon'], 'string'],
             [

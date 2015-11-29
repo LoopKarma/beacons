@@ -159,7 +159,7 @@ class TemplateController extends Controller
 
     public function actionGetMerchantPos($merchantId)
     {
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $out = ['results' => ['id' => '', 'text' => '']];
         if (Yii::$app->request->isAjax && $merchantId) {
             $items = Pos::find()

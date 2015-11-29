@@ -39,7 +39,7 @@ class Merchant extends \yii\db\ActiveRecord
         return [
             [['uuid', 'name', 'pass_type_id', 'major'], 'required'],
             [['cert_files'], 'required', 'on' => 'create'],
-            [['uuid', 'major'], 'unique'],
+            [['uuid'], 'validateUniqueMerchant'],
             [['uuid'], 'string', 'max' => 36],
             [['major'], 'string', 'max' => 20],
             [['name'], 'string', 'max' => 100],
@@ -80,6 +80,16 @@ class Merchant extends \yii\db\ActiveRecord
                 },
             ],
         ];
+    }
+
+    public function validateUniqueMerchant()
+    {
+        $merchant = self::find()->where(['uuid' => $this->uuid, 'major' => $this->major])->count('merchant_id');
+        if ($merchant) {
+            $error = 'Мерчант с таким набором uuid и major уже существует';
+            $this->addError('uuid', $error);
+            $this->addError('major', $error);
+        }
     }
 
     /**
