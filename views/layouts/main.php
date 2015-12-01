@@ -48,7 +48,7 @@ AppAsset::register($this);
         } elseif (Yii::$app->user->can(\app\models\User::ROLE_MERCHANT)) {
             $items = ArrayHelper::merge($items, [
                 [
-                    'label' => '<i class="glyphicon glyphicon-tag"></i> Ваши купоны',
+                    'label' => '<i class="glyphicon glyphicon-tag"></i> Статистика',
                     'url' => ['/coupon/index']
                 ],
                 [

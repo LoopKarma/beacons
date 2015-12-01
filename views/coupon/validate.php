@@ -17,7 +17,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'serialNumber')?>
+    <?= $form->field($model, 'serialNumber')
+        ->label('Введите ID номер купона (номер, указанный на лицевой стороне купона, предъявляемого покупателем )')?>
 
     <div class="form-group">
         <?= Html::submitButton('Подтвердить купон', ['class' => 'btn btn-primary']) ?>

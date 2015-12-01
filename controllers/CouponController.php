@@ -54,7 +54,7 @@ class CouponController extends Controller
         $model = new CouponValidate();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             if ($model->validateCoupon()) {
-                $message =  'Купон с серийным номером ' . $model->serialNumber . ' был подтвержден';
+                $message =  'Купон с серийным номером ' . $model->serialNumber . ' успешно погашен';
                 $type = 'success';
             } else {
                 $message =  'Произошла ошибка при подтверждении купона';
