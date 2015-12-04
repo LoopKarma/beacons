@@ -117,7 +117,7 @@ if (!empty(array_filter($searchModel->attributes))) {
             'serial_number',
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view}',
+                'template' => '{view}{delete}',
             ],
         ],
     ]); ?>
