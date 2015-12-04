@@ -60,13 +60,13 @@ class Coupon extends \yii\db\ActiveRecord
     {
         return [
             'coupon_id' => 'ID',
-            'create_date' => 'Дата генерации',
+            'create_date' => 'Дата показа',
             'change_date' => 'Дата изменения',
             'template_id' => 'ID шаблона',
             'merchant_id' => 'Мерчант',
             'pos_id' => 'Точка продаж',
             'client' => 'Client',
-            'confirmed' => 'Подтверждено',
+            'confirmed' => 'Погашен',
             'message' => 'Сообщение',
             'uuid' => 'Uuid',
             'major' => '* Major *',
