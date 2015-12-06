@@ -117,7 +117,7 @@ if (!empty(array_filter($searchModel->attributes))) {
             'serial_number',
             [
                 'class' => 'yii\grid\ActionColumn',
-                'template' => '{view}{delete}',
+                'template' => Yii::$app->user->can(\app\models\User::ROLE_ADMIN) ? '{view}{delete}' : '{view}'
             ],
         ],
     ]); ?>
